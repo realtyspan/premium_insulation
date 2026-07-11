@@ -1015,3 +1015,196 @@ h2 { font-weight: 600; }
   .hero__bg { animation: none; }
   .reveal, .reveal-stagger > * { opacity: 1; transform: none; transition: none; }
 }
+
+/* ==========================================================================
+   Portfolio — Filters + Job Cards
+   ========================================================================== */
+.filter-group {
+  margin-bottom: 22px;
+}
+
+.filter-group__label {
+  font-family: var(--font-head);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--grey-text);
+  text-align: center;
+  margin-bottom: 14px;
+}
+
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.filter-chip {
+  font-family: var(--font-head);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--charcoal);
+  background: var(--white);
+  border: 1px solid var(--grey-line);
+  padding: 10px 20px;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: transform .3s var(--ease), border-color .3s, background .3s, color .3s;
+}
+.filter-chip:hover { border-color: var(--gold); transform: translateY(-2px); }
+.filter-chip.is-active {
+  background: var(--red);
+  border-color: var(--red);
+  color: var(--white);
+}
+
+.portfolio-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 34px;
+  margin-top: 56px;
+}
+
+@media (max-width: 980px) { .portfolio-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 640px) { .portfolio-grid { grid-template-columns: 1fr; } }
+
+.job-card {
+  background: var(--white);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--grey-line);
+  transition: transform .4s var(--ease), box-shadow .4s var(--ease);
+}
+.job-card:hover { transform: translateY(-8px); box-shadow: 0 30px 50px -26px rgba(0,0,0,.25); }
+
+.job-card__body { padding: 22px 24px 26px; }
+
+.job-card__meta {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-family: var(--font-head);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 8px;
+}
+.job-card__meta span:last-child { color: var(--grey-text); font-weight: 500; }
+
+.job-card__title {
+  font-family: var(--font-head);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--charcoal);
+  text-transform: none;
+  letter-spacing: 0;
+  margin-bottom: 6px;
+}
+
+.job-card__caption { font-size: 14px; color: var(--grey-text); margin: 0; }
+
+.portfolio-empty {
+  text-align: center;
+  padding: 70px 20px;
+  color: var(--grey-text);
+  font-family: var(--font-head);
+  letter-spacing: .5px;
+  display: none;
+}
+
+/* Before / After Slider */
+.ba-slider {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  cursor: ew-resize;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: pan-y;
+  background: var(--off-white);
+}
+
+.ba-slider__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  display: block;
+}
+
+.ba-slider__before-wrap {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  clip-path: inset(0 50% 0 0);
+}
+
+.ba-slider__handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 3px;
+  background: var(--white);
+  transform: translateX(-50%);
+  box-shadow: 0 0 0 1px rgba(0,0,0,.15);
+}
+
+.ba-slider__handle::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 44px;
+  height: 44px;
+  background: var(--white);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 6px 16px -4px rgba(0,0,0,.4);
+  z-index: 1;
+}
+
+.ba-slider__handle::after {
+  content: '\2194';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  font-size: 18px;
+  line-height: 1;
+  color: var(--red);
+  font-weight: 700;
+}
+
+.ba-slider__handle:focus-visible::before {
+  box-shadow: 0 0 0 4px rgba(240,165,0,.4), 0 6px 16px -4px rgba(0,0,0,.4);
+  outline: none;
+}
+
+.ba-slider__tag {
+  position: absolute;
+  top: 14px;
+  font-family: var(--font-head);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--white);
+  background: rgba(20,20,20,.65);
+  padding: 5px 12px;
+  border-radius: 20px;
+  z-index: 2;
+  pointer-events: none;
+}
+.ba-slider__tag--before { left: 14px; }
+.ba-slider__tag--after { right: 14px; }

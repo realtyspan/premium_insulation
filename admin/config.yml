@@ -1,0 +1,44 @@
+backend:
+  name: git-gateway
+  branch: main
+
+# Netlify Identity + Git Gateway must be enabled in the Netlify dashboard
+# (Site settings > Identity > Enable, and Identity > Services > Git Gateway)
+# before this admin panel can log anyone in.
+
+media_folder: "assets/img/jobs"
+public_folder: "/assets/img/jobs"
+
+site_url: https://premiuminsulationny.com
+display_url: https://premiuminsulationny.com
+logo_url: /assets/Logo.png
+
+collections:
+  - name: "portfolio"
+    label: "Job Portfolio"
+    label_singular: "Job"
+    files:
+      - name: "jobs"
+        label: "Before & After Jobs"
+        description: "Add, edit, reorder, or remove the before/after jobs shown on the Portfolio page."
+        file: "content/jobs.json"
+        format: "json"
+        fields:
+          - label: "Jobs"
+            name: "jobs"
+            widget: "list"
+            summary: "{{fields.title}} — {{fields.county}}"
+            fields:
+              - { label: "Job Title", name: "title", widget: "string", hint: "e.g. Red Hook Colonial — Attic Retrofit" }
+              - label: "County"
+                name: "county"
+                widget: "select"
+                options: ["Dutchess", "Columbia", "Ulster", "Greene"]
+              - label: "Service Type"
+                name: "serviceType"
+                widget: "select"
+                options: ["Spray Foam", "Cellulose", "Soundproofing"]
+              - { label: "Before Photo", name: "beforeImage", widget: "image" }
+              - { label: "After Photo", name: "afterImage", widget: "image" }
+              - { label: "Caption", name: "caption", widget: "text", required: false, hint: "One sentence describing the job." }
+              - { label: "Date", name: "date", widget: "datetime", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false, default: "" }

@@ -1,0 +1,31 @@
+{
+  "jobs": [
+    {
+      "title": "Attic Spray Foam Retrofit",
+      "county": "Dutchess",
+      "serviceType": "Spray Foam",
+      "beforeImage": "/assets/img/attic-frame-1.jpg",
+      "afterImage": "/assets/img/attic-corner-1.jpg",
+      "caption": "Bare rafter framing sealed with closed cell spray foam for a fully conditioned attic.",
+      "date": "2024-10-11"
+    },
+    {
+      "title": "Foundation Wall Air-Seal",
+      "county": "Ulster",
+      "serviceType": "Spray Foam",
+      "beforeImage": "/assets/img/foundation-corner-1.jpg",
+      "afterImage": "/assets/img/wall-cavity-fill-1.jpg",
+      "caption": "Exposed block foundation air-sealed and insulated to close out a persistent moisture and draft problem.",
+      "date": "2024-10-11"
+    },
+    {
+      "title": "Commercial Hangar Insulation",
+      "county": "Columbia",
+      "serviceType": "Soundproofing",
+      "beforeImage": "/assets/img/hangar-dome-1.jpg",
+      "afterImage": "/assets/img/hangar-dome-2.jpg",
+      "caption": "Full-span quonset hangar roof deck sprayed for thermal and sound control.",
+      "date": "2023-10-05"
+    }
+  ]
+}

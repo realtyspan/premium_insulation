@@ -18,6 +18,9 @@ $mime = @{
   ".ico"  = "image/x-icon"
   ".gif"  = "image/gif"
   ".webp" = "image/webp"
+  ".json" = "application/json"
+  ".yml"  = "text/yaml"
+  ".yaml" = "text/yaml"
 }
 
 while ($listener.IsListening) {
