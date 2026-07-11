@@ -11,7 +11,7 @@ public_folder: "/assets/img/jobs"
 
 site_url: https://premiuminsulationny.com
 display_url: https://premiuminsulationny.com
-logo_url: /assets/Logo.png
+logo_url: /assets/img/PremiumInsulation-Logo.png
 
 collections:
   - name: "portfolio"
