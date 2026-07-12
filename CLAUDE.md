@@ -11,7 +11,12 @@ Marketing site + self-service job portfolio for Premium Insulation, Inc., a spra
 
 **Hosting: Netlify** (chosen over Brizy Cloud and Elementor/WordPress, both seriously considered). Netlify won because its ecosystem (Identity + Git Gateway + a git-backed CMS) let the client manage portfolio content without a heavier CMS/build pipeline, while keeping the site fully static.
 
-**Contact form: placeholder, pending Formaloo.** The original design brief specified embedding a Formaloo form (native Google Sheets + email notification integrations). `contact.html` has a plain HTML form with a comment marking exactly where the real Formaloo embed goes — **this swap has not been done yet.**
+**Contact form: Netlify Forms (native), not Formaloo.** The original brief specified Formaloo (for native Google Sheets + email integrations), but the client decided to use Netlify's built-in form handling instead — no external service, no API keys, no build step.
+- `contact.html`'s form has `data-netlify="true"`, `name="contact"`, and a honeypot field (`netlify-honeypot="bot-field"` + hidden `bot-field` input) for spam filtering. Netlify detects it by parsing the static HTML at deploy — no JS-rendered form, so no duplicate hidden-form trick needed.
+- `js/contact-form.js` intercepts submit and POSTs via `fetch` so the page shows an inline "Thank You" message (`#form-success` in `contact.html`) instead of redirecting to Netlify's default success page.
+- Email notifications are **not** code — they're configured in the Netlify dashboard (Site settings → Forms → Form notifications → Email notification). Currently pointed at `realtyspan@gmail.com` for testing; **swap to the client's real business email before launch.**
+- No Google Sheets sync (that was Formaloo-specific). If the client wants a Sheets copy of leads later, that needs Zapier or a Netlify Function — not built.
+- Can only be fully tested (including the email send) on an actual Netlify deploy — the local `server.ps1` static server can't process Netlify Forms submissions.
 
 **CMS: Decap CMS via Netlify Identity + Git Gateway.**
 - Client logs into `/admin/` (Netlify Identity), which lets them edit `content/jobs.json` directly through a friendly form — no GitHub account, no code.
@@ -34,7 +39,7 @@ Marketing site + self-service job portfolio for Premium Insulation, Inc., a spra
 
 ## Known open items
 
-- [ ] Swap the placeholder contact form for the real Formaloo embed (`contact.html`).
+- [ ] Set the Netlify Forms email notification recipient from the testing address (`realtyspan@gmail.com`) to the client's real business email before launch (Netlify dashboard → Site settings → Forms → Form notifications).
 - [ ] Seed data in `content/jobs.json` uses plausible-but-placeholder before/after photo pairings, not real matched job photos — client should replace via `/admin/`.
 - [ ] `assets/Logo.png` (old low-res logo, superseded by `assets/img/PremiumInsulation-Logo.png`) is still sitting unused in the repo — never explicitly removed.
 - [ ] Custom domain (premiuminsulationny.com) not yet pointed at Netlify.

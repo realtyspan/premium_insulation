@@ -910,6 +910,28 @@ h2 { font-weight: 600; }
 
 .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
 
+.hp-field {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.form-success {
+  background: var(--white);
+  border-radius: 10px;
+  box-shadow: 0 30px 60px -26px rgba(0,0,0,.25);
+  padding: 44px;
+  border-top: 5px solid var(--red);
+  text-align: center;
+}
+.form-success h3 {
+  font-family: var(--font-head);
+  color: var(--charcoal);
+  margin-bottom: 12px;
+}
+
 .info-list { list-style: none; margin: 30px 0 0; padding: 0; }
 .info-list li {
   display: flex;

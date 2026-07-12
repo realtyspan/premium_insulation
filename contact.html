@@ -140,13 +140,12 @@
       </div>
 
       <div class="form-card">
-        <!--
-          BRIZY NOTE: Replace this <form> with your Formaloo custom form
-          using Brizy's HTML/Embed element. Field set below mirrors the
-          Formaloo intake spec: Name, Contact Info, Property Location
-          (County dropdown), Project Type, Insulation Type Needed.
-        -->
-        <form action="#" method="post">
+        <form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+          <input type="hidden" name="form-name" value="contact">
+          <p class="hp-field">
+            <label>Leave this field blank: <input name="bot-field"></label>
+          </p>
+
           <div class="field-row">
             <div class="field">
               <label for="name">Full Name</label>
@@ -194,6 +193,11 @@
 
           <button type="submit" class="btn btn--primary" style="width:100%; justify-content:center;">Get My Free Estimate</button>
         </form>
+
+        <div id="form-success" class="form-success" hidden>
+          <h3>Thank You!</h3>
+          <p>Your request has been received. A member of our team will follow up within one business day.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -242,5 +246,6 @@
 </footer>
 
 <script src="js/main.js"></script>
+<script src="js/contact-form.js"></script>
 </body>
 </html>
