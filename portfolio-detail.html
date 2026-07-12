@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Job Portfolio | Before &amp; After | Premium Insulation, Inc.</title>
-<meta name="description" content="See real before and after results from Premium Insulation, Inc. — spray foam, cellulose, and soundproofing jobs across Dutchess, Columbia, Ulster &amp; Greene Counties, NY.">
+<title>Job Details | Premium Insulation, Inc.</title>
+<meta name="description" content="Full before, after, and in-progress photos for a Premium Insulation, Inc. job.">
+<meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Great+Vibes&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
@@ -55,51 +56,52 @@
 </div>
 
 <!-- ============================================================
-     BANNER HEADER
+     JOB DETAIL CONTENT (populated by js/portfolio-detail.js)
      ============================================================ -->
-<section class="page-banner" style="background-image:url('assets/img/ceiling-finished-1.jpg');">
-  <div class="page-banner__overlay"></div>
-  <div class="container">
-    <div class="breadcrumb">Home / Portfolio</div>
-    <h1>Job Portfolio</h1>
-    <p class="script">Real Jobs. Real Results. Drag to Compare.</p>
-  </div>
-</section>
+<div id="jobDetailMount">
+  <section class="section--tight">
+    <div class="container">
+      <a href="portfolio.html" class="back-link reveal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
+        Back to Portfolio
+      </a>
+
+      <div class="job-detail-head reveal">
+        <div class="job-detail-meta">
+          <span id="jobMetaService"></span>
+          <span>&middot;</span>
+          <span id="jobMetaCounty"></span>
+        </div>
+        <h1 id="jobTitle">Loading job&hellip;</h1>
+        <p id="jobCaption" class="job-detail-caption"></p>
+      </div>
+
+      <div id="jobHeroSlider" class="job-hero-slider reveal"></div>
+    </div>
+  </section>
+
+  <section class="section section--offwhite">
+    <div class="container">
+      <div class="section-head center reveal">
+        <span class="eyebrow" style="justify-content:center;">Full Gallery</span>
+        <h2>Every Angle of This Job</h2>
+        <p>Tap any photo to view it larger.</p>
+      </div>
+      <div id="jobThumbGrid" class="job-thumb-grid reveal-stagger"></div>
+    </div>
+  </section>
+</div>
 
 <!-- ============================================================
-     FILTERS + BEFORE/AFTER GRID
+     NOT FOUND STATE
      ============================================================ -->
-<section class="section">
+<section class="section" id="jobNotFound" style="display:none;">
   <div class="container">
-    <div class="section-head center reveal">
-      <span class="eyebrow" style="justify-content:center;">Before &amp; After</span>
-      <h2>See the Premium Difference</h2>
-      <p>Drag the slider on any photo to see the transformation. Filter by county or service type to find work like yours.</p>
+    <div class="section-head center">
+      <h2>Job Not Found</h2>
+      <p>We couldn't find that job — it may have been removed or the link is out of date.</p>
+      <a href="portfolio.html" class="btn btn--primary" style="margin-top:20px;">View Full Portfolio</a>
     </div>
-
-    <div class="filter-group reveal">
-      <div class="filter-group__label">County</div>
-      <div class="filter-bar" id="countyFilters">
-        <button type="button" class="filter-chip is-active" data-value="All">All Counties</button>
-        <button type="button" class="filter-chip" data-value="Dutchess">Dutchess</button>
-        <button type="button" class="filter-chip" data-value="Columbia">Columbia</button>
-        <button type="button" class="filter-chip" data-value="Ulster">Ulster</button>
-        <button type="button" class="filter-chip" data-value="Greene">Greene</button>
-      </div>
-    </div>
-
-    <div class="filter-group reveal">
-      <div class="filter-group__label">Service Type</div>
-      <div class="filter-bar" id="serviceFilters">
-        <button type="button" class="filter-chip is-active" data-value="All">All Services</button>
-        <button type="button" class="filter-chip" data-value="Spray Foam">Spray Foam</button>
-        <button type="button" class="filter-chip" data-value="Cellulose">Cellulose</button>
-        <button type="button" class="filter-chip" data-value="Soundproofing">Soundproofing</button>
-      </div>
-    </div>
-
-    <div class="portfolio-grid" id="portfolioGrid"></div>
-    <p class="portfolio-empty" id="portfolioEmpty">No jobs match those filters yet — try a different county or service type.</p>
   </div>
 </section>
 
@@ -111,12 +113,27 @@
     <div class="callout reveal">
       <div>
         <h2>Want Results Like These at Your Job Site?</h2>
-        <p>Get a free, no-pressure estimate from the crew behind every project above.</p>
+        <p>Get a free, no-pressure estimate from the crew behind every project in our portfolio.</p>
       </div>
       <a href="contact.html" class="btn btn--outline">Get a Free Estimate</a>
     </div>
   </div>
 </section>
+
+<!-- ============================================================
+     LIGHTBOX
+     ============================================================ -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox__close" id="lightboxClose" aria-label="Close">&times;</button>
+  <button class="lightbox__nav lightbox__nav--prev" id="lightboxPrev" aria-label="Previous photo">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+  </button>
+  <img id="lightboxImg" class="lightbox__img" src="" alt="">
+  <button class="lightbox__nav lightbox__nav--next" id="lightboxNext" aria-label="Next photo">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+  </button>
+  <div class="lightbox__counter" id="lightboxCounter"></div>
+</div>
 
 <footer class="site-footer">
   <div class="container">
@@ -162,6 +179,6 @@
 
 <script src="js/main.js"></script>
 <script src="js/portfolio-common.js"></script>
-<script src="js/portfolio.js"></script>
+<script src="js/portfolio-detail.js"></script>
 </body>
 </html>

@@ -40,5 +40,13 @@ collections:
                 options: ["Spray Foam", "Cellulose", "Soundproofing"]
               - { label: "Before Photo", name: "beforeImage", widget: "image" }
               - { label: "After Photo", name: "afterImage", widget: "image" }
+              - label: "Gallery Photos"
+                name: "gallery"
+                widget: "list"
+                field: { label: "Photo", name: "photo", widget: "image" }
+                min: 0
+                max: 6
+                required: false
+                hint: "Up to 6 extra photos showing the full scope of the job, shown on the job's detail page alongside the Before/After pair above."
               - { label: "Caption", name: "caption", widget: "text", required: false, hint: "One sentence describing the job." }
               - { label: "Date", name: "date", widget: "datetime", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false, default: "" }

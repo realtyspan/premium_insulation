@@ -1208,3 +1208,196 @@ h2 { font-weight: 600; }
 }
 .ba-slider__tag--before { left: 14px; }
 .ba-slider__tag--after { right: 14px; }
+
+.job-card__title-link { display: block; }
+.job-card__title-link:hover .job-card__title { color: var(--red); }
+
+.job-card__view-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  font-family: var(--font-head);
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-size: 13px;
+  color: var(--red);
+}
+.job-card__view-link svg { width: 16px; height: 16px; transition: transform .3s var(--ease); }
+.job-card__view-link:hover svg { transform: translateX(5px); }
+
+/* ==========================================================================
+   Job Detail Page
+   ========================================================================== */
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-head);
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-size: 13px;
+  color: var(--grey-text);
+  margin-bottom: 30px;
+  transition: color .3s;
+}
+.back-link svg { width: 16px; height: 16px; }
+.back-link:hover { color: var(--red); }
+
+.job-detail-head {
+  max-width: 780px;
+  margin: 0 auto 40px;
+  text-align: center;
+}
+
+.job-detail-meta {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  font-family: var(--font-head);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 12px;
+}
+.job-detail-meta span:nth-child(2) { color: var(--grey-line); }
+.job-detail-meta span:nth-child(3) { color: var(--grey-text); font-weight: 500; }
+
+.job-detail-caption {
+  font-size: 16.5px;
+  color: var(--grey-text);
+  margin-top: 6px;
+}
+
+.job-hero-slider {
+  max-width: 900px;
+  margin: 0 auto;
+}
+.job-hero-slider .ba-slider {
+  aspect-ratio: 16 / 10;
+  border-radius: 8px;
+  box-shadow: 0 30px 60px -26px rgba(0,0,0,.3);
+}
+
+.job-thumb-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  margin-top: 44px;
+}
+
+@media (max-width: 900px) { .job-thumb-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 620px) { .job-thumb-grid { grid-template-columns: repeat(2, 1fr); } }
+
+.job-thumb {
+  position: relative;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: pointer;
+  aspect-ratio: 4 / 3;
+  background: var(--off-white);
+  transition: transform .35s var(--ease), box-shadow .35s var(--ease);
+}
+.job-thumb:hover { transform: translateY(-6px); box-shadow: 0 20px 36px -18px rgba(0,0,0,.35); }
+
+.job-thumb__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.job-thumb__tag {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-family: var(--font-head);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--white);
+  background: rgba(20,20,20,.65);
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+/* ==========================================================================
+   Lightbox
+   ========================================================================== */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(10,10,10,.94);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .3s var(--ease);
+}
+.lightbox.is-open { opacity: 1; visibility: visible; }
+
+.lightbox__img {
+  max-width: 88vw;
+  max-height: 82vh;
+  border-radius: 4px;
+  box-shadow: 0 30px 70px -20px rgba(0,0,0,.7);
+}
+
+.lightbox__close {
+  position: absolute;
+  top: 22px;
+  right: 26px;
+  background: none;
+  border: none;
+  color: var(--white);
+  font-size: 38px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.lightbox__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255,255,255,.1);
+  border: none;
+  color: var(--white);
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background .3s;
+}
+.lightbox__nav:hover { background: rgba(255,255,255,.22); }
+.lightbox__nav svg { width: 24px; height: 24px; }
+.lightbox__nav--prev { left: 24px; }
+.lightbox__nav--next { right: 24px; }
+
+.lightbox__counter {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-head);
+  font-size: 13px;
+  letter-spacing: 1px;
+  color: rgba(255,255,255,.8);
+}
+
+@media (max-width: 600px) {
+  .lightbox__nav { width: 42px; height: 42px; }
+  .lightbox__nav--prev { left: 10px; }
+  .lightbox__nav--next { right: 10px; }
+}

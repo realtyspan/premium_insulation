@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var grid = document.getElementById('portfolioGrid');
   if (!grid) return;
 
+  var P = window.PIPortfolio;
   var emptyState = document.getElementById('portfolioEmpty');
   var countyBar = document.getElementById('countyFilters');
   var serviceBar = document.getElementById('serviceFilters');
@@ -9,92 +10,19 @@ document.addEventListener('DOMContentLoaded', function () {
   var state = { county: 'All', service: 'All' };
   var jobs = [];
 
-  function el(tag, className) {
-    var e = document.createElement(tag);
-    if (className) e.className = className;
-    return e;
-  }
-
-  function initSlider(slider) {
-    var beforeWrap = slider.querySelector('.ba-slider__before-wrap');
-    var handle = slider.querySelector('.ba-slider__handle');
-    var dragging = false;
-
-    function setPos(percent) {
-      percent = Math.max(0, Math.min(100, percent));
-      beforeWrap.style.clipPath = 'inset(0 ' + (100 - percent) + '% 0 0)';
-      handle.style.left = percent + '%';
-      handle.setAttribute('aria-valuenow', String(Math.round(percent)));
-    }
-
-    function posFromEvent(e) {
-      var rect = slider.getBoundingClientRect();
-      var clientX = e.clientX;
-      return ((clientX - rect.left) / rect.width) * 100;
-    }
-
-    slider.addEventListener('pointerdown', function (e) {
-      dragging = true;
-      slider.setPointerCapture(e.pointerId);
-      setPos(posFromEvent(e));
-    });
-    slider.addEventListener('pointermove', function (e) {
-      if (!dragging) return;
-      setPos(posFromEvent(e));
-    });
-    ['pointerup', 'pointerleave', 'pointercancel'].forEach(function (evt) {
-      slider.addEventListener(evt, function () { dragging = false; });
-    });
-
-    handle.addEventListener('keydown', function (e) {
-      var current = parseFloat(handle.style.left) || 50;
-      if (e.key === 'ArrowLeft') { setPos(current - 5); e.preventDefault(); }
-      if (e.key === 'ArrowRight') { setPos(current + 5); e.preventDefault(); }
-    });
-
-    setPos(50);
-  }
-
   function buildCard(job) {
-    var card = el('div', 'job-card reveal');
+    var card = P.el('div', 'job-card reveal');
     card.dataset.county = job.county;
     card.dataset.service = job.serviceType;
 
-    var slider = el('div', 'ba-slider');
+    var detailUrl = 'portfolio-detail.html?job=' + encodeURIComponent(P.slugify(job.title));
 
-    var afterImg = el('img', 'ba-slider__img ba-slider__after');
-    afterImg.src = job.afterImage;
-    afterImg.alt = job.title + ' — after';
-    afterImg.loading = 'lazy';
-    slider.appendChild(afterImg);
+    var slider = P.createBASlider(job.beforeImage, job.afterImage, job.title);
+    card.appendChild(slider);
 
-    var beforeWrap = el('div', 'ba-slider__before-wrap');
-    var beforeImg = el('img', 'ba-slider__img ba-slider__before');
-    beforeImg.src = job.beforeImage;
-    beforeImg.alt = job.title + ' — before';
-    beforeImg.loading = 'lazy';
-    beforeWrap.appendChild(beforeImg);
-    slider.appendChild(beforeWrap);
+    var body = P.el('div', 'job-card__body');
 
-    var tagBefore = el('span', 'ba-slider__tag ba-slider__tag--before');
-    tagBefore.textContent = 'Before';
-    var tagAfter = el('span', 'ba-slider__tag ba-slider__tag--after');
-    tagAfter.textContent = 'After';
-    slider.appendChild(tagBefore);
-    slider.appendChild(tagAfter);
-
-    var handle = el('div', 'ba-slider__handle');
-    handle.tabIndex = 0;
-    handle.setAttribute('role', 'slider');
-    handle.setAttribute('aria-label', 'Drag to compare before and after photos for ' + job.title);
-    handle.setAttribute('aria-valuemin', '0');
-    handle.setAttribute('aria-valuemax', '100');
-    handle.setAttribute('aria-valuenow', '50');
-    slider.appendChild(handle);
-
-    var body = el('div', 'job-card__body');
-
-    var meta = el('div', 'job-card__meta');
+    var meta = P.el('div', 'job-card__meta');
     var serviceSpan = document.createElement('span');
     serviceSpan.textContent = job.serviceType;
     var countySpan = document.createElement('span');
@@ -102,21 +30,27 @@ document.addEventListener('DOMContentLoaded', function () {
     meta.appendChild(serviceSpan);
     meta.appendChild(countySpan);
 
-    var title = el('h3', 'job-card__title');
+    var titleLink = P.el('a', 'job-card__title-link');
+    titleLink.href = detailUrl;
+    var title = P.el('h3', 'job-card__title');
     title.textContent = job.title;
+    titleLink.appendChild(title);
 
     body.appendChild(meta);
-    body.appendChild(title);
+    body.appendChild(titleLink);
 
     if (job.caption) {
-      var caption = el('p', 'job-card__caption');
+      var caption = P.el('p', 'job-card__caption');
       caption.textContent = job.caption;
       body.appendChild(caption);
     }
 
-    card.appendChild(slider);
+    var viewLink = P.el('a', 'job-card__view-link');
+    viewLink.href = detailUrl;
+    viewLink.innerHTML = 'View Full Job <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+    body.appendChild(viewLink);
+
     card.appendChild(body);
-    initSlider(slider);
     return card;
   }
 
@@ -160,13 +94,9 @@ document.addEventListener('DOMContentLoaded', function () {
   wireFilterBar(countyBar, 'county');
   wireFilterBar(serviceBar, 'service');
 
-  fetch('content/jobs.json')
-    .then(function (res) {
-      if (!res.ok) throw new Error('jobs.json not found');
-      return res.json();
-    })
+  P.fetchJobs()
     .then(function (data) {
-      jobs = data.jobs || [];
+      jobs = data;
       render();
     })
     .catch(function () {

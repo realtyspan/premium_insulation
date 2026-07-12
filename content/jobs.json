@@ -7,7 +7,12 @@
       "beforeImage": "/assets/img/attic-frame-1.jpg",
       "afterImage": "/assets/img/attic-corner-1.jpg",
       "caption": "Bare rafter framing sealed with closed cell spray foam for a fully conditioned attic.",
-      "date": "2024-10-11"
+      "date": "2024-10-11",
+      "gallery": [
+        "/assets/img/attic-loft-1.jpg",
+        "/assets/img/attic-loft-2.jpg",
+        "/assets/img/gable-peak-1.jpg"
+      ]
     },
     {
       "title": "Foundation Wall Air-Seal",
@@ -16,7 +21,11 @@
       "beforeImage": "/assets/img/foundation-corner-1.jpg",
       "afterImage": "/assets/img/wall-cavity-fill-1.jpg",
       "caption": "Exposed block foundation air-sealed and insulated to close out a persistent moisture and draft problem.",
-      "date": "2024-10-11"
+      "date": "2024-10-11",
+      "gallery": [
+        "/assets/img/foundation-side-1.jpg",
+        "/assets/img/crew-exterior-application.jpg"
+      ]
     },
     {
       "title": "Commercial Hangar Insulation",
@@ -25,7 +34,11 @@
       "beforeImage": "/assets/img/hangar-dome-1.jpg",
       "afterImage": "/assets/img/hangar-dome-2.jpg",
       "caption": "Full-span quonset hangar roof deck sprayed for thermal and sound control.",
-      "date": "2023-10-05"
+      "date": "2023-10-05",
+      "gallery": [
+        "/assets/hero1-hangar-biplane.jpg",
+        "/assets/img/fleet-trucks.jpg"
+      ]
     }
   ]
 }
