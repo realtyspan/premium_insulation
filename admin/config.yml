@@ -28,6 +28,9 @@ collections:
             name: "jobs"
             widget: "list"
             summary: "{{fields.title}} — {{fields.county}}"
+            collapsed: true
+            minimize_collapsed: true
+            label_singular: "Job"
             fields:
               - { label: "Job Title", name: "title", widget: "string", hint: "e.g. Red Hook Colonial — Attic Retrofit" }
               - label: "County"
