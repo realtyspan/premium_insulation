@@ -1,6 +1,6 @@
 # Premium Insulation, Inc. — Website
 
-Marketing site + self-service job portfolio for Premium Insulation, Inc., a spray foam/cellulose/soundproofing insulation contractor in Red Hook, NY (owners: Karl Albrecht & Jeff Chandler, founded 2011). Serves Dutchess, Columbia, Ulster & Greene counties.
+Marketing site + self-service job portfolio for Premium Insulation, Inc., a spray foam/cellulose/soundproofing insulation contractor in Red Hook, NY (owners: Karl Albrecht & Jeff Chandler, founded 2011). Serves Dutchess, Columbia, Ulster, Greene, Rensselaer & Albany counties.
 
 ## Stack, and why
 

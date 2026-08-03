@@ -33,7 +33,7 @@ collections:
               - label: "County"
                 name: "county"
                 widget: "select"
-                options: ["Dutchess", "Columbia", "Ulster", "Greene"]
+                options: ["Dutchess", "Columbia", "Ulster", "Greene", "Rensselaer", "Albany"]
               - label: "Service Type"
                 name: "serviceType"
                 widget: "select"
