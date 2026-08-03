@@ -628,14 +628,6 @@ h2 { font-weight: 600; }
   box-shadow: 0 24px 44px -22px rgba(0,0,0,.3);
 }
 
-.zz-num {
-  font-family: var(--font-head);
-  font-size: 15px;
-  color: var(--gold);
-  font-weight: 700;
-  letter-spacing: 2px;
-}
-
 .zz-text a.link {
   display: inline-flex;
   align-items: center;
