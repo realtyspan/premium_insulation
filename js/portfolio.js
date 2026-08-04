@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function () {
     card.dataset.county = job.county;
     card.dataset.service = job.serviceType;
 
-    var detailUrl = 'portfolio-detail.html?job=' + encodeURIComponent(P.slugify(job.title));
+    var detailUrl = '/portfolio/' + encodeURIComponent(P.slugify(job.title));
 
     var slider = P.createBASlider(job.beforeImage, job.afterImage, job.title);
     card.appendChild(slider);

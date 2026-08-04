@@ -89,7 +89,9 @@ window.PIPortfolio = (function () {
   }
 
   function fetchJobs() {
-    return fetch('content/jobs.json')
+    // Root-relative: the detail page is also served from /portfolio/<slug>,
+    // where a relative path would resolve to /portfolio/content/jobs.json.
+    return fetch('/content/jobs.json')
       .then(function (res) {
         if (!res.ok) throw new Error('jobs.json not found');
         return res.json();

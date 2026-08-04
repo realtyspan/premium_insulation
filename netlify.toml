@@ -1,7 +1,43 @@
 [build]
   publish = "."
 
+# Pretty job URLs. A 200 rewrite (not a redirect) so /portfolio/<slug> serves
+# the detail template while keeping its own URL — which is what lets each job
+# be crawled and indexed as a distinct page. portfolio-detail.js reads the slug
+# from the path, and still honours the old ?job= form so previously shared
+# links keep working.
+[[redirects]]
+  from = "/portfolio/*"
+  to = "/portfolio-detail.html"
+  status = 200
+
+# ---------------------------------------------------------------------------
+# Caching
+#
+# There is no build step, so css/styles.css and js/*.js have no content hash in
+# their filenames. Long-lived immutable caching on those would strand visitors
+# on stale files after a deploy with no way to bust it, so they are left on
+# Netlify's default (ETag revalidation — cheap 304s, always correct).
+#
+# Images are the bulk of the payload, are named stably, and change only when
+# tools/optimize-images.ps1 is re-run or the client uploads a new job photo
+# (which lands under a new filename), so they take a real cache window.
+# ---------------------------------------------------------------------------
+
+[[headers]]
+  for = "/assets/img/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800, stale-while-revalidate=86400"
+
+# Portfolio content is CMS-edited and should surface quickly after a save.
 [[headers]]
   for = "/content/jobs.json"
   [headers.values]
     Cache-Control = "public, max-age=60"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Frame-Options = "SAMEORIGIN"

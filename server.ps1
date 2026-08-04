@@ -33,6 +33,11 @@ while ($listener.IsListening) {
   try {
     $path = [System.Uri]::UnescapeDataString($req.Url.LocalPath)
     if ($path -eq "/") { $path = "/index.html" }
+
+    # Mirrors the /portfolio/* 200 rewrite in netlify.toml so pretty job URLs
+    # can be tested locally instead of only after a deploy.
+    if ($path -match '^/portfolio/.+') { $path = "/portfolio-detail.html" }
+
     $filePath = Join-Path $root ($path.TrimStart("/"))
 
     if (Test-Path $filePath -PathType Leaf) {

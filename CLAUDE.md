@@ -30,7 +30,9 @@ Marketing site + self-service job portfolio for Premium Insulation, Inc., a spra
 - `portfolio.html` + `js/portfolio.js` — filterable grid (by county + service type) of job teaser cards, each with an inline before/after drag slider.
 - `portfolio-detail.html` + `js/portfolio-detail.js` — **one reusable page**, not one file per job. Reads `?job=<slug>` from the URL, where the slug is derived client-side from the job title via `slugify()` (no manual slug field in the CMS — one less thing for the non-technical client to fill in or typo). Shows the before/after pair as a hero slider plus a thumbnail grid (before + after + gallery) opening into a lightbox.
 - `js/portfolio-common.js` — shared `createBASlider()`, `slugify()`, `el()`, `fetchJobs()` used by both the grid and detail pages, so the slider logic exists in exactly one place.
-- URLs are query-string based (`portfolio-detail.html?job=foo`), not pretty (`/portfolio/foo`). Pretty URLs are possible later via a Netlify `_redirects` rule but were deliberately left out of v1 to avoid an untested extra layer.
+- **URLs are pretty: `/portfolio/<slug>`**, via a `status = 200` rewrite in `netlify.toml` (a rewrite, not a redirect — the URL stays put, which is what lets each job be indexed as its own page). `portfolio-detail.js` reads the slug from `location.pathname` and **still falls back to the old `?job=` query string**, so links shared before the change keep working; those legacy URLs canonicalise to the pretty form.
+- Because the detail template is also served from a nested path, **every URL inside `portfolio-detail.html` is root-relative** (`/css/...`, `/js/...`, `/assets/...`), as is `fetchJobs()`'s `/content/jobs.json`. A relative path there resolves against `/portfolio/` and 404s. Keep this in mind when editing that page.
+- `server.ps1` mirrors the `/portfolio/*` rewrite so pretty URLs work in local preview instead of only after deploy.
 
 ## SEO layer
 
@@ -38,7 +40,17 @@ Marketing site + self-service job portfolio for Premium Insulation, Inc., a spra
 - **`index.html` carries a `HomeAndConstructionBusiness` JSON-LD block** (name, phone, founders, locality, six `areaServed` counties, three-service `hasOfferCatalog`). Street address, geo coordinates, and opening hours are **deliberately omitted rather than guessed** — adding them is the single biggest remaining local-SEO win, but they must come from the client.
 - **Open Graph + Twitter Card tags on all six pages**, sharing one image: `assets/img/og-share.jpg` (1200x630, generated from the truck livery photo by `tools/make-icons.ps1`). OG image URLs must be absolute, hence the hardcoded domain.
 - **`robots.txt`** (disallows `/admin/`, points at the sitemap) and **`sitemap.xml`** (five pages; `portfolio-detail.html` excluded since it is one noindex template serving every job).
-- **`portfolio-detail.html` stays `noindex`.** Every job renders through the same URL with a `?job=` slug, so Google would only ever see one page. Indexing jobs properly requires pretty URLs (`_redirects`) plus per-job canonical tags — a real project, not a metadata tweak. It has OG tags anyway so shared job links preview correctly.
+- **Job pages are now indexable.** Each is served at its own `/portfolio/<slug>` URL, and `portfolio-detail.js` fills in the canonical, title, description and OG image from the matched job. When a slug matches nothing it injects `<meta name="robots" content="noindex">` instead, so a bad URL does not register as a soft 404. `robots.txt` disallows the bare `/portfolio-detail.html` template so it cannot be indexed in its own right.
+- Job URLs are **not** in `sitemap.xml` — they come from CMS-edited `jobs.json`, and generating them would need a build step. Google discovers them through the links on `portfolio.html`, which is sufficient.
+
+## Accessibility
+
+- **Skip link** on every page, first child of `<body>`, targeting a `<main id="main">` landmark that wraps each page's content. It is `position: fixed` — `absolute` pins it to the top of the *document*, so it stays off screen when the page is restored at a scrolled position.
+- **Mobile drawer** sets `aria-expanded` on the toggle, traps Tab within itself, closes on Escape, and returns focus to the toggle.
+  - It uses the **`inert` attribute** to stay out of the tab order and accessibility tree while closed. The transform alone leaves the links focusable off screen. This was first attempted with a transitioned `visibility`, which does not reliably settle back to `hidden` after a close — `inert` is the right tool. `aria-hidden` is kept in sync for browsers predating `inert`.
+  - Focus must move out of the drawer *before* it is inerted, or focus lands on `<body>` and the return-focus is lost.
+- **Global `:focus-visible`** ring in brand gold. Form fields and the before/after slider handle define their own focus treatment and legitimately clear the outline; everything else inherits the global rule.
+- **`prefers-reduced-motion`** damps all animation/transition durations, plus a JS branch that renders the stat counters at their final value (they animate `textContent`, which CSS cannot reach).
 
 ## Images & performance
 
@@ -61,9 +73,8 @@ Marketing site + self-service job portfolio for Premium Insulation, Inc., a spra
 
 - [ ] Set the Netlify Forms email notification recipient from the testing address (`realtyspan@gmail.com`) to the client's real business email before launch (Netlify dashboard → Site settings → Forms → Form notifications).
 - [ ] Seed data in `content/jobs.json` uses plausible-but-placeholder before/after photo pairings, not real matched job photos — client should replace via `/admin/`.
-- [ ] `assets/Logo.png` (old low-res logo, superseded by `assets/img/PremiumInsulation-Logo.png`) is still sitting unused in the repo — never explicitly removed.
 - [ ] **Get the street address, ZIP, and business hours from the client** and add them to the JSON-LD block in `index.html` — the largest remaining local-SEO gain.
 - [ ] Custom domain (premiuminsulationny.com) not yet pointed at Netlify — **now also blocks the canonical tags and sitemap from resolving.**
 - [ ] Submit `sitemap.xml` to Google Search Console once the domain is live.
-- [ ] Consider pretty URLs for job detail pages via Netlify `_redirects` if desired.
+- [ ] Verify the `/portfolio/<slug>` rewrite on the deployed site. It is mirrored in `server.ps1` for local preview, but only Netlify exercises the real `netlify.toml` rule.
 - [ ] Netlify Identity/Git Gateway deprecation — no action needed now, but keep DecapBridge in mind if it ever stops working.

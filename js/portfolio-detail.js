@@ -6,8 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   var lightbox = setupLightbox();
 
-  var params = new URLSearchParams(window.location.search);
-  var slug = params.get('job') || '';
+  var slug = readSlug();
 
   P.fetchJobs()
     .then(function (jobs) {
@@ -17,13 +16,54 @@ document.addEventListener('DOMContentLoaded', function () {
     })
     .catch(showNotFound);
 
+  /* Pretty URLs are /portfolio/<slug> (a Netlify 200 rewrite). The older
+     ?job=<slug> form is still honoured so links shared before the change,
+     and any bookmark of one, keep resolving. */
+  function readSlug() {
+    var m = window.location.pathname.match(/^\/portfolio\/([^\/]+)\/?$/);
+    if (m) return decodeURIComponent(m[1]);
+    return new URLSearchParams(window.location.search).get('job') || '';
+  }
+
+  function setMeta(selector, attr, value) {
+    var el = document.querySelector(selector);
+    if (el) el.setAttribute(attr, value);
+  }
+
   function showNotFound() {
     mount.style.display = 'none';
     if (notFound) notFound.style.display = 'block';
+
+    // No job behind this URL, so keep it out of the index rather than letting
+    // it register as a soft 404.
+    var robots = document.createElement('meta');
+    robots.name = 'robots';
+    robots.content = 'noindex';
+    document.head.appendChild(robots);
   }
 
   function renderJob(job) {
     document.title = job.title + ' | Job Portfolio | Premium Insulation, Inc.';
+
+    // Point every job at its canonical pretty URL, whichever form was used to
+    // reach it, so the ?job= and /portfolio/ variants consolidate.
+    var canonicalUrl = 'https://premiuminsulationny.com/portfolio/' + P.slugify(job.title);
+    setMeta('link[rel="canonical"]', 'href', canonicalUrl);
+    setMeta('meta[property="og:url"]', 'content', canonicalUrl);
+    setMeta('meta[property="og:title"]', 'content', document.title);
+    setMeta('meta[name="twitter:title"]', 'content', document.title);
+
+    if (job.caption) {
+      setMeta('meta[name="description"]', 'content', job.caption);
+      setMeta('meta[property="og:description"]', 'content', job.caption);
+      setMeta('meta[name="twitter:description"]', 'content', job.caption);
+    }
+
+    if (job.afterImage) {
+      var abs = new URL(job.afterImage, 'https://premiuminsulationny.com').href;
+      setMeta('meta[property="og:image"]', 'content', abs);
+      setMeta('meta[name="twitter:image"]', 'content', abs);
+    }
 
     document.getElementById('jobTitle').textContent = job.title;
     document.getElementById('jobMetaService').textContent = job.serviceType;
