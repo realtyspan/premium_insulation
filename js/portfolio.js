@@ -17,7 +17,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     var detailUrl = '/portfolio/' + encodeURIComponent(P.slugify(job.title));
 
-    var slider = P.createBASlider(job.beforeImage, job.afterImage, job.title);
+    // Grid is 3 cols (~370px each) at desktop, 2 then 1 as it narrows.
+    var slider = P.createBASlider(job.beforeImage, job.afterImage, job.title, {
+      widths: [400, 800],
+      sizes: '(max-width: 640px) 100vw, (max-width: 980px) 46vw, 31vw'
+    });
     card.appendChild(slider);
 
     var body = P.el('div', 'job-card__body');

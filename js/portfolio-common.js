@@ -14,6 +14,70 @@ window.PIPortfolio = (function () {
       .replace(/^-+|-+$/g, '');
   }
 
+  /* ------------------------------------------------------------------
+     Netlify Image CDN
+
+     Job photos are uploaded through the CMS straight from a phone, at full
+     resolution. Rather than ask a non-technical client to resize anything,
+     Netlify's image endpoint resizes and re-encodes them at the edge, and
+     negotiates WebP/AVIF from the browser's Accept header on its own. It
+     needs no build step and no configuration for local site assets.
+
+     server.ps1 mirrors the endpoint (serving the original file, unresized) so
+     local preview exercises these same URLs rather than a separate code path.
+     ------------------------------------------------------------------ */
+  var CDN_ENDPOINT = '/.netlify/images';
+
+  function cdnAvailable() {
+    // Opening the files directly from disk has no server to answer the
+    // endpoint; everything else (local preview or Netlify) does.
+    return window.location.protocol !== 'file:';
+  }
+
+  function transformable(src) {
+    // Remote sources would need an [images] remote_images allowlist in
+    // netlify.toml, so pass them through untouched rather than 404.
+    return !!src && !/^https?:\/\//i.test(src) && !/^data:/i.test(src) && cdnAvailable();
+  }
+
+  function imageUrl(src, width) {
+    if (!transformable(src)) return src;
+    return CDN_ENDPOINT + '?url=' + encodeURIComponent(src) + '&w=' + width + '&q=78';
+  }
+
+  function imageSrcset(src, widths) {
+    if (!transformable(src)) return '';
+    return widths.map(function (w) {
+      return imageUrl(src, w) + ' ' + w + 'w';
+    }).join(', ');
+  }
+
+  /* Points an <img> at the CDN, with a srcset so a phone does not download a
+     desktop-sized crop. `sizes` should describe the slot the image renders in. */
+  function applyImage(img, src, opts) {
+    opts = opts || {};
+    var widths = opts.widths || [400, 800];
+    var largest = widths[widths.length - 1];
+
+    img.src = imageUrl(src, largest);
+
+    var srcset = imageSrcset(src, widths);
+    if (srcset) {
+      img.srcset = srcset;
+      if (opts.sizes) img.sizes = opts.sizes;
+    }
+
+    // The detail page's hero slider is above the fold — lazy-loading it would
+    // delay the largest contentful paint.
+    if (opts.eager) {
+      img.loading = 'eager';
+      img.fetchPriority = 'high';
+    } else {
+      img.loading = 'lazy';
+      img.decoding = 'async';
+    }
+  }
+
   function initSlider(slider, beforeWrap, handle) {
     var dragging = false;
 
@@ -51,20 +115,18 @@ window.PIPortfolio = (function () {
     setPos(50);
   }
 
-  function createBASlider(beforeSrc, afterSrc, title) {
+  function createBASlider(beforeSrc, afterSrc, title, opts) {
     var slider = el('div', 'ba-slider');
 
     var afterImg = el('img', 'ba-slider__img ba-slider__after');
-    afterImg.src = afterSrc;
     afterImg.alt = title + ' — after';
-    afterImg.loading = 'lazy';
+    applyImage(afterImg, afterSrc, opts);
     slider.appendChild(afterImg);
 
     var beforeWrap = el('div', 'ba-slider__before-wrap');
     var beforeImg = el('img', 'ba-slider__img ba-slider__before');
-    beforeImg.src = beforeSrc;
     beforeImg.alt = title + ' — before';
-    beforeImg.loading = 'lazy';
+    applyImage(beforeImg, beforeSrc, opts);
     beforeWrap.appendChild(beforeImg);
     slider.appendChild(beforeWrap);
 
@@ -103,6 +165,8 @@ window.PIPortfolio = (function () {
     el: el,
     slugify: slugify,
     createBASlider: createBASlider,
-    fetchJobs: fetchJobs
+    fetchJobs: fetchJobs,
+    imageUrl: imageUrl,
+    applyImage: applyImage
   };
 })();

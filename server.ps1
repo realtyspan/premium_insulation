@@ -38,6 +38,16 @@ while ($listener.IsListening) {
     # can be tested locally instead of only after a deploy.
     if ($path -match '^/portfolio/.+') { $path = "/portfolio-detail.html" }
 
+    # Stands in for Netlify's Image CDN (/.netlify/images?url=...&w=...) so the
+    # portfolio uses one set of URLs everywhere. Resizing is Netlify's job —
+    # this just returns the original file.
+    if ($path -eq "/.netlify/images") {
+      $m = [regex]::Match($req.Url.Query, '(?:\?|&)url=([^&]*)')
+      if ($m.Success) {
+        $path = [System.Uri]::UnescapeDataString($m.Groups[1].Value)
+      }
+    }
+
     $filePath = Join-Path $root ($path.TrimStart("/"))
 
     if (Test-Path $filePath -PathType Leaf) {

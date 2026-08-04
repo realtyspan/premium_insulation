@@ -52,6 +52,45 @@ Marketing site + self-service job portfolio for Premium Insulation, Inc., a spra
 - **Global `:focus-visible`** ring in brand gold. Form fields and the before/after slider handle define their own focus treatment and legitimately clear the outline; everything else inherits the global rule.
 - **`prefers-reduced-motion`** damps all animation/transition durations, plus a JS branch that renders the stat counters at their final value (they animate `textContent`, which CSS cannot reach).
 
+## Client-uploaded job photos (Netlify Image CDN)
+
+The client uploads job photos through `/admin/` straight from a phone, at full
+resolution. Rather than ask them to resize anything, every portfolio image is
+requested through **Netlify's Image CDN**:
+
+```
+/.netlify/images?url=<encoded path>&w=<width>&q=78
+```
+
+- **No build step and no configuration** — the endpoint works out of the box for
+  local site assets. (Remote hosts would need an `[images] remote_images`
+  allowlist in `netlify.toml`; `imageUrl()` passes absolute URLs through
+  untouched so they never 404.)
+- Netlify negotiates **WebP/AVIF** from the browser's `Accept` header on its own,
+  so no format handling is needed here.
+- `js/portfolio-common.js` owns this: `imageUrl(src, width)` builds a single URL,
+  and `applyImage(img, src, opts)` sets `src` + a `srcset`/`sizes` pair so a
+  phone does not download a desktop-sized crop. Widths per slot are chosen to
+  match the CSS: grid cards `[400, 800]`, detail hero `[900, 1800]`, thumbnails
+  `[300, 600]`, lightbox `1800`.
+- The detail hero passes `eager: true` — it is above the fold, and lazy-loading
+  it would delay the largest contentful paint.
+- **`server.ps1` mirrors the endpoint** (returning the original file, unresized),
+  so local preview exercises the same URLs instead of a separate fallback path.
+  Only `file://` bypasses the CDN.
+- Encoding is handled by `encodeURIComponent`, which matters because client
+  filenames routinely contain spaces, parentheses and `&` — an unencoded
+  ampersand would truncate the query string.
+
+⚠️ **This does not stop the original upload entering git.** Decap commits the raw
+file through Git Gateway, so an 8MB phone photo is 8MB in history, permanently.
+Decap has **no** `max_file_size` for the default git-backed media library (checked
+— it only exists via third-party media services), so there is no guardrail to
+add. Two options if the repo starts growing: run `tools/optimize-images.ps1` over
+`assets/img/jobs/` periodically and commit the shrunk versions (history still
+carries the originals), or move media to Cloudinary, which Decap supports natively
+as a `media_library` and which keeps binaries out of git entirely.
+
 ## Images & performance
 
 - All `<img>` tags carry intrinsic `width`/`height` (the one exception, `#lightboxImg`, is populated at runtime). This matters most for the two logos, which are styled `height: fixed; width: auto` and so cannot reserve horizontal space until load.
@@ -77,4 +116,6 @@ Marketing site + self-service job portfolio for Premium Insulation, Inc., a spra
 - [ ] Custom domain (premiuminsulationny.com) not yet pointed at Netlify — **now also blocks the canonical tags and sitemap from resolving.**
 - [ ] Submit `sitemap.xml` to Google Search Console once the domain is live.
 - [ ] Verify the `/portfolio/<slug>` rewrite on the deployed site. It is mirrored in `server.ps1` for local preview, but only Netlify exercises the real `netlify.toml` rule.
+- [ ] Verify Netlify Image CDN on the deployed site (upload a large photo via `/admin/` and confirm the served image is resized and WebP/AVIF). Local preview only proves the URLs are well-formed — `server.ps1` returns the original file unresized.
+- [ ] Netlify's docs mention image-transformation "credits" on Pro plans but do not publish free-plan limits. Transformations are edge-cached, so repeat views should not re-bill, but glance at account usage once real traffic starts.
 - [ ] Netlify Identity/Git Gateway deprecation — no action needed now, but keep DecapBridge in mind if it ever stops working.

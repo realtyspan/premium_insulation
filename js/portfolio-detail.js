@@ -76,8 +76,13 @@ document.addEventListener('DOMContentLoaded', function () {
       captionEl.style.display = 'none';
     }
 
+    // Hero slider is capped at 900px wide and sits above the fold.
     document.getElementById('jobHeroSlider').appendChild(
-      P.createBASlider(job.beforeImage, job.afterImage, job.title)
+      P.createBASlider(job.beforeImage, job.afterImage, job.title, {
+        widths: [900, 1800],
+        sizes: '(max-width: 940px) 100vw, 900px',
+        eager: true
+      })
     );
 
     var photos = [
@@ -92,9 +97,12 @@ document.addEventListener('DOMContentLoaded', function () {
       thumb.setAttribute('aria-label', 'View larger photo ' + (index + 1) + ' of ' + photos.length);
 
       var img = P.el('img', 'job-thumb__img');
-      img.src = photo.src;
       img.alt = job.title + (photo.label ? ' — ' + photo.label : ' — additional photo ' + (index + 1));
-      img.loading = 'lazy';
+      // Thumb grid is 4 cols (~285px each), dropping to 3 then 2.
+      P.applyImage(img, photo.src, {
+        widths: [300, 600],
+        sizes: '(max-width: 620px) 46vw, (max-width: 900px) 30vw, 285px'
+      });
       thumb.appendChild(img);
 
       if (photo.label) {
@@ -123,7 +131,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function show(i) {
       current = (i + photos.length) % photos.length;
-      imgEl.src = photos[current].src;
+      // Lightbox fills up to 88vw; 1800px covers large displays without
+      // shipping the untouched multi-megabyte upload.
+      imgEl.src = P.imageUrl(photos[current].src, 1800);
       imgEl.alt = photos[current].label || ('Photo ' + (current + 1));
       counter.textContent = (current + 1) + ' / ' + photos.length;
     }
