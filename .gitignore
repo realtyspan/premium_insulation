@@ -2,3 +2,8 @@
 Thumbs.db
 *.tmp
 node_modules/
+
+# Client source documents dropped into assets/ for reference. Anything
+# committed here is served publicly by Netlify, so these stay out of the repo.
+assets/*.pdf
+assets/*.docx

@@ -32,6 +32,25 @@ Marketing site + self-service job portfolio for Premium Insulation, Inc., a spra
 - `js/portfolio-common.js` — shared `createBASlider()`, `slugify()`, `el()`, `fetchJobs()` used by both the grid and detail pages, so the slider logic exists in exactly one place.
 - URLs are query-string based (`portfolio-detail.html?job=foo`), not pretty (`/portfolio/foo`). Pretty URLs are possible later via a Netlify `_redirects` rule but were deliberately left out of v1 to avoid an untested extra layer.
 
+## SEO layer
+
+- **Canonicals point at `https://premiuminsulationny.com`** on all five indexable pages. ⚠️ That domain is **not yet connected to Netlify** — until it is, canonicals reference a host that doesn't resolve. Connect the domain before (or alongside) treating the site as launched, otherwise leave this in mind when interpreting Search Console.
+- **`index.html` carries a `HomeAndConstructionBusiness` JSON-LD block** (name, phone, founders, locality, six `areaServed` counties, three-service `hasOfferCatalog`). Street address, geo coordinates, and opening hours are **deliberately omitted rather than guessed** — adding them is the single biggest remaining local-SEO win, but they must come from the client.
+- **Open Graph + Twitter Card tags on all six pages**, sharing one image: `assets/img/og-share.jpg` (1200x630, generated from the truck livery photo by `tools/make-icons.ps1`). OG image URLs must be absolute, hence the hardcoded domain.
+- **`robots.txt`** (disallows `/admin/`, points at the sitemap) and **`sitemap.xml`** (five pages; `portfolio-detail.html` excluded since it is one noindex template serving every job).
+- **`portfolio-detail.html` stays `noindex`.** Every job renders through the same URL with a `?job=` slug, so Google would only ever see one page. Indexing jobs properly requires pretty URLs (`_redirects`) plus per-job canonical tags — a real project, not a metadata tweak. It has OG tags anyway so shared job links preview correctly.
+
+## Images & performance
+
+- All `<img>` tags carry intrinsic `width`/`height` (the one exception, `#lightboxImg`, is populated at runtime). This matters most for the two logos, which are styled `height: fixed; width: auto` and so cannot reserve horizontal space until load.
+- Below-the-fold images use `loading="lazy" decoding="async"`; header logos stay eager.
+- Favicons (`favicon-16/32.png`, `apple-touch-icon.png`) are a **"PI" monogram in the brand red/gold**, not the wordmark — the real logo is 480x288 and illegible below ~64px.
+- `tools/make-icons.ps1` regenerates the favicon set + OG image. Only re-run if the brand mark changes.
+- `tools/optimize-images.ps1` was reworked and now has two important properties:
+  - **Idempotent.** JPEG re-encoding is lossy, so the old version degraded every image a little on every run — and the docs told you to re-run it routinely. It now skips files already within their width/size budget, and reverts any re-encode that fails to gain ≥8% at unchanged dimensions ("at quality floor").
+  - **Matches extensions explicitly.** The old `Get-ChildItem -Include *.jpg` also matched `.jpeg` on Windows, which silently emitted a duplicate `GreenFiber.jpg` alongside `GreenFiber.jpeg`.
+  - Full-bleed hero/banner images are capped at 1600px wide / quality 72 (they always sit under a dark overlay); half-column images 1200px / quality 78.
+
 ## Repo & deploy
 
 - GitHub: `https://github.com/realtyspan/premium_insulation.git`, branch `main`.
@@ -43,6 +62,8 @@ Marketing site + self-service job portfolio for Premium Insulation, Inc., a spra
 - [ ] Set the Netlify Forms email notification recipient from the testing address (`realtyspan@gmail.com`) to the client's real business email before launch (Netlify dashboard → Site settings → Forms → Form notifications).
 - [ ] Seed data in `content/jobs.json` uses plausible-but-placeholder before/after photo pairings, not real matched job photos — client should replace via `/admin/`.
 - [ ] `assets/Logo.png` (old low-res logo, superseded by `assets/img/PremiumInsulation-Logo.png`) is still sitting unused in the repo — never explicitly removed.
-- [ ] Custom domain (premiuminsulationny.com) not yet pointed at Netlify.
+- [ ] **Get the street address, ZIP, and business hours from the client** and add them to the JSON-LD block in `index.html` — the largest remaining local-SEO gain.
+- [ ] Custom domain (premiuminsulationny.com) not yet pointed at Netlify — **now also blocks the canonical tags and sitemap from resolving.**
+- [ ] Submit `sitemap.xml` to Google Search Console once the domain is live.
 - [ ] Consider pretty URLs for job detail pages via Netlify `_redirects` if desired.
 - [ ] Netlify Identity/Git Gateway deprecation — no action needed now, but keep DecapBridge in mind if it ever stops working.

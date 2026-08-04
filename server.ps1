@@ -21,6 +21,9 @@ $mime = @{
   ".json" = "application/json"
   ".yml"  = "text/yaml"
   ".yaml" = "text/yaml"
+  ".txt"  = "text/plain"
+  ".xml"  = "application/xml"
+  ".webmanifest" = "application/manifest+json"
 }
 
 while ($listener.IsListening) {

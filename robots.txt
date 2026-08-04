@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# Decap CMS admin panel — nothing here for crawlers.
+Disallow: /admin/
+
+Sitemap: https://premiuminsulationny.com/sitemap.xml
