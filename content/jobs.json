@@ -1,18 +1,14 @@
 {
   "jobs": [
     {
-      "title": "Attic Spray Foam Retrofit",
+      "title": "Daycare",
       "county": "Dutchess",
       "serviceType": "Spray Foam",
-      "beforeImage": "/assets/img/attic-frame-1.jpg",
-      "afterImage": "/assets/img/attic-corner-1.jpg",
-      "caption": "Bare rafter framing sealed with closed cell spray foam for a fully conditioned attic.",
+      "beforeImage": "/assets/img/jobs/daycaredutchessbefore.jpg",
+      "afterImage": "/assets/img/jobs/daycaredutchessafter.jpg",
+      "caption": "Bare rafter framing sealed with closed-cell spray foam for a fully conditioned space.",
       "date": "2024-10-11",
-      "gallery": [
-        "/assets/img/attic-loft-1.jpg",
-        "/assets/img/attic-loft-2.jpg",
-        "/assets/img/gable-peak-1.jpg"
-      ]
+      "gallery": []
     },
     {
       "title": "Foundation Wall Air-Seal",
