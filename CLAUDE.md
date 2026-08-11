@@ -88,6 +88,24 @@ has **no** `max_file_size` for the default git-backed media library (checked —
 only exists via third-party media services), so the only guardrail available is
 the size hint on the image fields in `admin/config.yml`.
 
+**Keep uploads under 1 MB — and do not "round that up".** Git Gateway proxies
+GitHub's Contents API, which returns file content inline only up to 1 MB
+(1,048,576 bytes); above that the `content` field comes back empty unless the
+caller asks for the raw media type. Decap renders media thumbnails by fetching
+the file through that API rather than generating real thumbnails
+([decap-cms#946](https://github.com/decaporg/decap-cms/issues/946)), which makes
+this the leading explanation for **thumbnails rendering blank in the editor while
+the upload itself commits and displays on the site perfectly well** — a symptom
+reported Aug 2026, not yet confirmed against a live CMS session.
+
+If chasing that symptom again: first check whether small images (~100 KB) preview
+fine while a near-1 MB one does not, and whether reloading `/admin/` makes the
+thumbnail appear — Decap has a separate known quirk where fresh uploads need a
+reload ([#3093](https://github.com/decaporg/decap-cms/issues/3093)). Note that
+[#7639](https://github.com/decaporg/decap-cms/issues/7639) (images missing after
+3.8.4) was ruled out: it affects only the preview pane, and this site runs
+3.15.1/3.17.1.
+
 **Do not "fix" this by re-running `tools/optimize-images.ps1` over
 `assets/img/jobs/`.** Rewriting a committed image *adds* a new blob while the
 original stays in history forever, so it makes the repo **larger**, not smaller —

@@ -44,13 +44,20 @@ collections:
                 name: "serviceType"
                 widget: "select"
                 options: ["Spray Foam", "Cellulose", "Soundproofing"]
-              # Photo size is guidance only — Decap cannot enforce a maximum on
-              # the default git-backed media library, and every upload is
-              # committed to the repository permanently. Visitors always get a
-              # resized copy via Netlify Image CDN, so this is about repo
-              # growth, not page speed.
-              - { label: "Before Photo", name: "beforeImage", widget: "image", hint: "Photos under about 2 MB are ideal. Larger ones still work — visitors are always sent a smaller, resized copy — but big files add up in the site's storage over time." }
-              - { label: "After Photo", name: "afterImage", widget: "image", hint: "Take this from the same spot as the Before photo where you can, so the drag-to-compare slider lines up. Same 2 MB guidance as above." }
+              # 1 MB is not an arbitrary round number: Git Gateway proxies
+              # GitHub's Contents API, which only returns file content inline
+              # up to 1 MB (1,048,576 bytes). Past that the content field comes
+              # back empty unless the raw media type is requested — which is a
+              # strong candidate for thumbnails rendering blank in this editor
+              # even though the upload itself commits fine.
+              #
+              # Guidance only: Decap cannot enforce a maximum on the default
+              # git-backed media library, and every upload is committed to the
+              # repository permanently. Visitors always get a resized copy via
+              # Netlify Image CDN, so this is about the editor and repo growth,
+              # not page speed.
+              - { label: "Before Photo", name: "beforeImage", widget: "image", hint: "Keep photos under about 1 MB. Larger ones still upload and still display correctly on the site, but their thumbnail may not preview here in the editor." }
+              - { label: "After Photo", name: "afterImage", widget: "image", hint: "Take this from the same spot as the Before photo where you can, so the drag-to-compare slider lines up. Same 1 MB guidance as above." }
               - label: "Gallery Photos"
                 name: "gallery"
                 widget: "list"
@@ -58,6 +65,6 @@ collections:
                 min: 0
                 max: 6
                 required: false
-                hint: "Up to 6 extra photos showing the full scope of the job, shown on the job's detail page alongside the Before/After pair above. Aim for under about 2 MB each."
+                hint: "Up to 6 extra photos showing the full scope of the job, shown on the job's detail page alongside the Before/After pair above. Keep each under about 1 MB."
               - { label: "Caption", name: "caption", widget: "text", required: false, hint: "One sentence describing the job." }
               - { label: "Date", name: "date", widget: "datetime", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false, default: "" }
