@@ -32,7 +32,10 @@ collections:
             minimize_collapsed: true
             label_singular: "Job"
             fields:
-              - { label: "Job Title", name: "title", widget: "string", hint: "e.g. Red Hook Colonial — Attic Retrofit" }
+              # The page address for each job is built from its title, so a
+              # rename moves the page. Warned about here because there is no
+              # other place the client would find that out.
+              - { label: "Job Title", name: "title", widget: "string", hint: "e.g. Red Hook Colonial — Attic Retrofit. Renaming a job also changes its web address, so any link you have already shared for it will stop working." }
               - label: "County"
                 name: "county"
                 widget: "select"
@@ -41,8 +44,13 @@ collections:
                 name: "serviceType"
                 widget: "select"
                 options: ["Spray Foam", "Cellulose", "Soundproofing"]
-              - { label: "Before Photo", name: "beforeImage", widget: "image" }
-              - { label: "After Photo", name: "afterImage", widget: "image" }
+              # Photo size is guidance only — Decap cannot enforce a maximum on
+              # the default git-backed media library, and every upload is
+              # committed to the repository permanently. Visitors always get a
+              # resized copy via Netlify Image CDN, so this is about repo
+              # growth, not page speed.
+              - { label: "Before Photo", name: "beforeImage", widget: "image", hint: "Photos under about 2 MB are ideal. Larger ones still work — visitors are always sent a smaller, resized copy — but big files add up in the site's storage over time." }
+              - { label: "After Photo", name: "afterImage", widget: "image", hint: "Take this from the same spot as the Before photo where you can, so the drag-to-compare slider lines up. Same 2 MB guidance as above." }
               - label: "Gallery Photos"
                 name: "gallery"
                 widget: "list"
@@ -50,6 +58,6 @@ collections:
                 min: 0
                 max: 6
                 required: false
-                hint: "Up to 6 extra photos showing the full scope of the job, shown on the job's detail page alongside the Before/After pair above."
+                hint: "Up to 6 extra photos showing the full scope of the job, shown on the job's detail page alongside the Before/After pair above. Aim for under about 2 MB each."
               - { label: "Caption", name: "caption", widget: "text", required: false, hint: "One sentence describing the job." }
               - { label: "Date", name: "date", widget: "datetime", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false, default: "" }

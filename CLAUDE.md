@@ -28,7 +28,7 @@ Marketing site + self-service job portfolio for Premium Insulation, Inc., a spra
 
 - `content/jobs.json` — single source of truth, array of job objects: `title, county, serviceType, beforeImage, afterImage, gallery[] (0-6 photos), caption, date`. Edited by Decap CMS, fetched client-side by the pages below.
 - `portfolio.html` + `js/portfolio.js` — filterable grid (by county + service type) of job teaser cards, each with an inline before/after drag slider.
-- `portfolio-detail.html` + `js/portfolio-detail.js` — **one reusable page**, not one file per job. Reads `?job=<slug>` from the URL, where the slug is derived client-side from the job title via `slugify()` (no manual slug field in the CMS — one less thing for the non-technical client to fill in or typo). Shows the before/after pair as a hero slider plus a thumbnail grid (before + after + gallery) opening into a lightbox.
+- `portfolio-detail.html` + `js/portfolio-detail.js` — **one reusable page**, not one file per job. Reads `?job=<slug>` from the URL, where the slug is derived client-side from the job title via `slugify()` (no manual slug field in the CMS — one less thing for the non-technical client to fill in or typo). ⚠️ **The tradeoff: renaming a job changes its URL**, and the old address then shows the "Job Not Found" state. This bit once already, when a job was retitled from "Attic Spray Foam Retrofit" to "Daycare" and the previous link went dead — the Job Title field in `admin/config.yml` now carries a hint warning about it. Shows the before/after pair as a hero slider plus a thumbnail grid (before + after + gallery) opening into a lightbox.
 - `js/portfolio-common.js` — shared `createBASlider()`, `slugify()`, `el()`, `fetchJobs()` used by both the grid and detail pages, so the slider logic exists in exactly one place.
 - **URLs are pretty: `/portfolio/<slug>`**, via a `status = 200` rewrite in `netlify.toml` (a rewrite, not a redirect — the URL stays put, which is what lets each job be indexed as its own page). `portfolio-detail.js` reads the slug from `location.pathname` and **still falls back to the old `?job=` query string**, so links shared before the change keep working; those legacy URLs canonicalise to the pretty form.
 - Because the detail template is also served from a nested path, **every URL inside `portfolio-detail.html` is root-relative** (`/css/...`, `/js/...`, `/assets/...`), as is `fetchJobs()`'s `/content/jobs.json`. A relative path there resolves against `/portfolio/` and 404s. Keep this in mind when editing that page.
@@ -83,13 +83,25 @@ requested through **Netlify's Image CDN**:
   ampersand would truncate the query string.
 
 ⚠️ **This does not stop the original upload entering git.** Decap commits the raw
-file through Git Gateway, so an 8MB phone photo is 8MB in history, permanently.
-Decap has **no** `max_file_size` for the default git-backed media library (checked
-— it only exists via third-party media services), so there is no guardrail to
-add. Two options if the repo starts growing: run `tools/optimize-images.ps1` over
-`assets/img/jobs/` periodically and commit the shrunk versions (history still
-carries the originals), or move media to Cloudinary, which Decap supports natively
-as a `media_library` and which keeps binaries out of git entirely.
+file through Git Gateway, so the full-size photo is in history permanently. Decap
+has **no** `max_file_size` for the default git-backed media library (checked — it
+only exists via third-party media services), so the only guardrail available is
+the size hint on the image fields in `admin/config.yml`.
+
+**Do not "fix" this by re-running `tools/optimize-images.ps1` over
+`assets/img/jobs/`.** Rewriting a committed image *adds* a new blob while the
+original stays in history forever, so it makes the repo **larger**, not smaller —
+and since Image CDN already resizes on delivery, there is no serving benefit
+either. The optimizer is for the site's own images in `assets/img/`, which are
+committed once and served directly.
+
+Scale, measured Aug 2026: whole repo 11 MB, largest single object a 1 MB client
+upload. At ~1 MB per photo and 8 photos per job, this has years of runway. If
+`.git` ever approaches a few hundred MB, the real fix is moving media to
+Cloudinary, which Decap supports natively as a `media_library` and which keeps
+binaries out of git entirely — external account, API key, and migrating existing
+paths are the costs. Rewriting history (BFG / `git filter-repo`) would break Git
+Gateway and is a genuine last resort.
 
 ## Images & performance
 
