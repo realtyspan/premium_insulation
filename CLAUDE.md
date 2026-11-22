@@ -6,7 +6,7 @@ Marketing site + self-service job portfolio for Premium Insulation, Inc., a spra
 
 - **Always `git pull` before changing anything.** The client edits jobs through `/admin/` (Decap CMS), which commits straight to GitHub, so this copy goes stale without anyone touching it.
 - This folder (`D:\Sites\premiuminsulation`) is the working copy since 2026-11-21. The old copy at `...\Temp Processing - Documents\Premium Insulation\Website` (OneDrive-synced) is retired — don't work there.
-- Client files (photos, the website brief .docx/.pdf, the `.ai` logo, "USB Files") currently sit in `...\Temp Processing - Documents\Premium Insulation\` — planned home is the client's Google Shared drive `G:\Shared drives\Premium Insulation\`.
+- Client files live in the client's Google Shared drive `G:\Shared drives\Premium Insulation\` (moved 2026-11-21): `2 Brand & Assets\Logo\Premium_Ins2.ai`, `2 Brand & Assets\Photos\` (job photos, Truck.jpg, `USB Files\` + `Resized\`), `3 Website\` (the website brief .docx/.pdf). Pull new source photos from there; never commit the brief (assets/*.pdf/.docx are gitignored because they'd be public).
 - **Hosting stays on Netlify** — Forms, Identity/Git Gateway (the client's `/admin/` login) and Image CDN all depend on it. This is the exception to the company "Cloudflare Pages" default; moving it would mean replacing all three, so don't propose it casually.
 - Domain premiuminsulationny.com (not yet pointed at Netlify) — registrar/expiry: see the Domain Inventory sheet (`D:\Sites\_company\CLAUDE.md`).
 - Pushing to `main` redeploys the live Netlify site — push only with the owner's OK.
