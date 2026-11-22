@@ -8,7 +8,7 @@ Marketing site + self-service job portfolio for Premium Insulation, Inc., a spra
 - This folder (`D:\Sites\premiuminsulation`) is the working copy since 2026-11-21. The old copy at `...\Temp Processing - Documents\Premium Insulation\Website` (OneDrive-synced) is retired — don't work there.
 - Client files live in the client's Google Shared drive `G:\Shared drives\Premium Insulation\` (moved 2026-11-21): `2 Brand & Assets\Logo\Premium_Ins2.ai`, `2 Brand & Assets\Photos\` (job photos, Truck.jpg, `USB Files\` + `Resized\`), `3 Website\` (the website brief .docx/.pdf). Pull new source photos from there; never commit the brief (assets/*.pdf/.docx are gitignored because they'd be public).
 - **Hosting stays on Netlify** — Forms, Identity/Git Gateway (the client's `/admin/` login) and Image CDN all depend on it. This is the exception to the company "Cloudflare Pages" default; moving it would mean replacing all three, so don't propose it casually.
-- Domain premiuminsulationny.com (not yet pointed at Netlify) — registrar/expiry: see the Domain Inventory sheet (`D:\Sites\_company\CLAUDE.md`).
+- Domain premiuminsulationny.com — live on Netlify (`www` redirects to it) — registrar/expiry: see the Domain Inventory sheet (`D:\Sites\_company\CLAUDE.md`).
 - Pushing to `main` redeploys the live Netlify site — push only with the owner's OK.
 - Preview: `.claude/launch.json` config `premium-insulation-static` → http://localhost:8080 (`server.ps1`).
 
@@ -24,7 +24,7 @@ Marketing site + self-service job portfolio for Premium Insulation, Inc., a spra
 **Contact form: Netlify Forms (native), not Formaloo.** The original brief specified Formaloo (for native Google Sheets + email integrations), but the client decided to use Netlify's built-in form handling instead — no external service, no API keys, no build step.
 - `contact.html`'s form has `data-netlify="true"`, `name="contact"`, and a honeypot field (`netlify-honeypot="bot-field"` + hidden `bot-field` input) for spam filtering. Netlify detects it by parsing the static HTML at deploy — no JS-rendered form, so no duplicate hidden-form trick needed.
 - `js/contact-form.js` intercepts submit and POSTs via `fetch` so the page shows an inline "Thank You" message (`#form-success` in `contact.html`) instead of redirecting to Netlify's default success page.
-- Email notifications are **not** code — they're configured in the Netlify dashboard (Site settings → Forms → Form notifications → Email notification). Currently pointed at `realtyspan@gmail.com` for testing; **swap to the client's real business email before launch.**
+- Email notifications are **not** code — they're configured in the Netlify dashboard (Site settings → Forms → Form notifications → Email notification). They go to the client's business email (Jeff's), plus a copy to the old test address `realtyspan@gmail.com`. Don't write the client's address into this file — it was publicly readable on the live site until Nov 2026 and the repo itself may be public.
 - No Google Sheets sync (that was Formaloo-specific). If the client wants a Sheets copy of leads later, that needs Zapier or a Netlify Function — not built.
 - Can only be fully tested (including the email send) on an actual Netlify deploy — the local `server.ps1` static server can't process Netlify Forms submissions.
 
@@ -46,7 +46,7 @@ Marketing site + self-service job portfolio for Premium Insulation, Inc., a spra
 
 ## SEO layer
 
-- **Canonicals point at `https://premiuminsulationny.com`** on all five indexable pages. ⚠️ That domain is **not yet connected to Netlify** — until it is, canonicals reference a host that doesn't resolve. Connect the domain before (or alongside) treating the site as launched, otherwise leave this in mind when interpreting Search Console.
+- **Canonicals point at `https://premiuminsulationny.com`** on all five indexable pages. The domain is connected to Netlify, so these resolve.
 - **`index.html` carries a `HomeAndConstructionBusiness` JSON-LD block** (name, phone, founders, locality, six `areaServed` counties, three-service `hasOfferCatalog`). Street address, geo coordinates, and opening hours are **deliberately omitted rather than guessed** — adding them is the single biggest remaining local-SEO win, but they must come from the client.
 - **Open Graph + Twitter Card tags on all six pages**, sharing one image: `assets/img/og-share.jpg` (1200x630, generated from the truck livery photo by `tools/make-icons.ps1`). OG image URLs must be absolute, hence the hardcoded domain.
 - **`robots.txt`** (disallows `/admin/`, points at the sitemap) and **`sitemap.xml`** (five pages; `portfolio-detail.html` excluded since it is one noindex template serving every job).
@@ -145,17 +145,21 @@ Gateway and is a genuine last resort.
 ## Repo & deploy
 
 - GitHub: `https://github.com/realtyspan/premium_insulation.git`, branch `main`.
+- `publish = "."` serves the **whole repo**. Netlify skips dotfiles and `netlify.toml` itself; `CLAUDE.md`, `server.ps1` and `tools/` are blocked by forced 404 rules in `netlify.toml`. Any new non-site file added at the root needs a rule there too.
 - Netlify site is connected to that repo; Identity + Git Gateway have been enabled and at least one test invite has been walked through.
 - Images are optimized via `tools/optimize-images.ps1` (uses .NET `System.Drawing` — no ImageMagick/PIL available on this dev machine). Re-run it after adding new large source photos to `assets/img/`.
 
 ## Known open items
 
-- [ ] Set the Netlify Forms email notification recipient from the testing address (`realtyspan@gmail.com`) to the client's real business email before launch (Netlify dashboard → Site settings → Forms → Form notifications).
-- [ ] Seed data in `content/jobs.json` uses plausible-but-placeholder before/after photo pairings, not real matched job photos — client should replace via `/admin/`.
-- [ ] **Get the street address, ZIP, and business hours from the client** and add them to the JSON-LD block in `index.html` — the largest remaining local-SEO gain.
-- [ ] Custom domain (premiuminsulationny.com) not yet pointed at Netlify — **now also blocks the canonical tags and sitemap from resolving.**
-- [ ] Submit `sitemap.xml` to Google Search Console once the domain is live.
-- [ ] Verify the `/portfolio/<slug>` rewrite on the deployed site. It is mirrored in `server.ps1` for local preview, but only Netlify exercises the real `netlify.toml` rule.
-- [ ] Verify Netlify Image CDN on the deployed site (upload a large photo via `/admin/` and confirm the served image is resized and WebP/AVIF). Local preview only proves the URLs are well-formed — `server.ps1` returns the original file unresized.
+Checked 2026-11-21 against the live site and the Netlify dashboard:
+
+- [x] Form notifications go to the client's business email (Jeff's) — 8 submissions, last 2026-11-20. The test address `realtyspan@gmail.com` still gets a copy; remove it only if the owner asks.
+- [x] Custom domain connected: premiuminsulationny.com serves the Netlify site, `www` 301s to the bare domain. Canonicals and sitemap now resolve.
+- [x] `/portfolio/<slug>` rewrite works on the deployed site.
+- [x] Netlify Image CDN works on the deployed site (returns resized WebP).
+- [x] `sitemap.xml` submitted to Google Search Console — **owner reports done, not verified** (needs a Google sign-in).
+- [ ] Placeholder photos: Daycare has real before/after uploads; Foundation Wall Air-Seal has a real "before" but a stock `wall-cavity-fill-1.jpg` "after"; Commercial Hangar Insulation still uses the seed `hangar-dome-1/2.jpg` pair. Client replaces via `/admin/`.
+- [ ] After the next deploy, confirm `/CLAUDE.md`, `/Claude.md`, `/server.ps1` and `/tools/make-icons.ps1` return 404 on premiuminsulationny.com (the rules can't be tested locally).
+- [ ] **Get the street address, ZIP, and business hours from the client** and add them to the JSON-LD block in `index.html` — still missing on the live site; the largest remaining local-SEO gain.
 - [ ] Netlify's docs mention image-transformation "credits" on Pro plans but do not publish free-plan limits. Transformations are edge-cached, so repeat views should not re-bill, but glance at account usage once real traffic starts.
 - [ ] Netlify Identity/Git Gateway deprecation — no action needed now, but keep DecapBridge in mind if it ever stops working.

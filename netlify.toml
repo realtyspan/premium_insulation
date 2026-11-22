@@ -11,6 +11,29 @@
   to = "/portfolio-detail.html"
   status = 200
 
+# Keep working files out of the public site. There is no build step, so
+# `publish = "."` serves the whole repo; Netlify already skips dotfiles and
+# netlify.toml, but CLAUDE.md (internal notes), server.ps1 (local preview) and
+# tools/ (image scripts) would otherwise be readable by anyone. force = true is
+# needed because the files exist. Add new non-site files here.
+[[redirects]]
+  from = "/CLAUDE.md"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/server.ps1"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/tools/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
 # ---------------------------------------------------------------------------
 # Caching
 #
