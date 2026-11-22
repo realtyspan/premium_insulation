@@ -2,6 +2,16 @@
 
 Marketing site + self-service job portfolio for Premium Insulation, Inc., a spray foam/cellulose/soundproofing insulation contractor in Red Hook, NY (owners: Karl Albrecht & Jeff Chandler, founded 2011). Serves Dutchess, Columbia, Ulster, Greene, Rensselaer & Albany counties.
 
+## Data Derivation setup (read first)
+
+- **Always `git pull` before changing anything.** The client edits jobs through `/admin/` (Decap CMS), which commits straight to GitHub, so this copy goes stale without anyone touching it.
+- This folder (`D:\Sites\premiuminsulation`) is the working copy since 2026-11-21. The old copy at `...\Temp Processing - Documents\Premium Insulation\Website` (OneDrive-synced) is retired — don't work there.
+- Client files (photos, the website brief .docx/.pdf, the `.ai` logo, "USB Files") currently sit in `...\Temp Processing - Documents\Premium Insulation\` — planned home is the client's Google Shared drive `G:\Shared drives\Premium Insulation\`.
+- **Hosting stays on Netlify** — Forms, Identity/Git Gateway (the client's `/admin/` login) and Image CDN all depend on it. This is the exception to the company "Cloudflare Pages" default; moving it would mean replacing all three, so don't propose it casually.
+- Domain premiuminsulationny.com (not yet pointed at Netlify) — registrar/expiry: see the Domain Inventory sheet (`D:\Sites\_company\CLAUDE.md`).
+- Pushing to `main` redeploys the live Netlify site — push only with the owner's OK.
+- Preview: `.claude/launch.json` config `premium-insulation-static` → http://localhost:8080 (`server.ps1`).
+
 ## Stack, and why
 
 **Plain static HTML/CSS/JS — no build step, no package.json, no bundler.** This was a deliberate constraint, not an oversight. It means:
