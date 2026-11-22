@@ -23,7 +23,7 @@ window.PIPortfolio = (function () {
      negotiates WebP/AVIF from the browser's Accept header on its own. It
      needs no build step and no configuration for local site assets.
 
-     server.ps1 mirrors the endpoint (serving the original file, unresized) so
+     .tools/server.ps1 mirrors the endpoint (serving the original file, unresized) so
      local preview exercises these same URLs rather than a separate code path.
      ------------------------------------------------------------------ */
   var CDN_ENDPOINT = '/.netlify/images';

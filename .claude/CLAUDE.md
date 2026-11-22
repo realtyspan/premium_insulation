@@ -10,13 +10,13 @@ Marketing site + self-service job portfolio for Premium Insulation, Inc., a spra
 - **Hosting stays on Netlify** — Forms, Identity/Git Gateway (the client's `/admin/` login) and Image CDN all depend on it. This is the exception to the company "Cloudflare Pages" default; moving it would mean replacing all three, so don't propose it casually.
 - Domain premiuminsulationny.com — live on Netlify (`www` redirects to it) — registrar/expiry: see the Domain Inventory sheet (`D:\Sites\_company\CLAUDE.md`).
 - Pushing to `main` redeploys the live Netlify site — push only with the owner's OK.
-- Preview: `.claude/launch.json` config `premium-insulation-static` → http://localhost:8080 (`server.ps1`).
+- Preview: `.claude/launch.json` config `premium-insulation-static` → http://localhost:8080 (`.tools/server.ps1`).
 
 ## Stack, and why
 
 **Plain static HTML/CSS/JS — no build step, no package.json, no bundler.** This was a deliberate constraint, not an oversight. It means:
 - Netlify deploys the repo as-is (no build command needed — see `netlify.toml`).
-- Local preview is just a static file server (`server.ps1`, a hand-rolled PowerShell HTTP listener — this dev machine originally had no Node/Python/http-server available).
+- Local preview is just a static file server (`.tools/server.ps1`, a hand-rolled PowerShell HTTP listener — this dev machine originally had no Node/Python/http-server available).
 - The portfolio/CMS system below was specifically designed to avoid needing a static site generator.
 
 **Hosting: Netlify** (chosen over Brizy Cloud and Elementor/WordPress, both seriously considered). Netlify won because its ecosystem (Identity + Git Gateway + a git-backed CMS) let the client manage portfolio content without a heavier CMS/build pipeline, while keeping the site fully static.
@@ -26,7 +26,7 @@ Marketing site + self-service job portfolio for Premium Insulation, Inc., a spra
 - `js/contact-form.js` intercepts submit and POSTs via `fetch` so the page shows an inline "Thank You" message (`#form-success` in `contact.html`) instead of redirecting to Netlify's default success page.
 - Email notifications are **not** code — they're configured in the Netlify dashboard (Site settings → Forms → Form notifications → Email notification). They go to the client's business email (Jeff's), plus a copy to the old test address `realtyspan@gmail.com`. Don't write the client's address into this file — it was publicly readable on the live site until Nov 2026 and the repo itself may be public.
 - No Google Sheets sync (that was Formaloo-specific). If the client wants a Sheets copy of leads later, that needs Zapier or a Netlify Function — not built.
-- Can only be fully tested (including the email send) on an actual Netlify deploy — the local `server.ps1` static server can't process Netlify Forms submissions.
+- Can only be fully tested (including the email send) on an actual Netlify deploy — the local `.tools/server.ps1` static server can't process Netlify Forms submissions.
 
 **CMS: Decap CMS via Netlify Identity + Git Gateway.**
 - Client logs into `/admin/` (Netlify Identity), which lets them edit `content/jobs.json` directly through a friendly form — no GitHub account, no code.
@@ -42,13 +42,13 @@ Marketing site + self-service job portfolio for Premium Insulation, Inc., a spra
 - `js/portfolio-common.js` — shared `createBASlider()`, `slugify()`, `el()`, `fetchJobs()` used by both the grid and detail pages, so the slider logic exists in exactly one place.
 - **URLs are pretty: `/portfolio/<slug>`**, via a `status = 200` rewrite in `netlify.toml` (a rewrite, not a redirect — the URL stays put, which is what lets each job be indexed as its own page). `portfolio-detail.js` reads the slug from `location.pathname` and **still falls back to the old `?job=` query string**, so links shared before the change keep working; those legacy URLs canonicalise to the pretty form.
 - Because the detail template is also served from a nested path, **every URL inside `portfolio-detail.html` is root-relative** (`/css/...`, `/js/...`, `/assets/...`), as is `fetchJobs()`'s `/content/jobs.json`. A relative path there resolves against `/portfolio/` and 404s. Keep this in mind when editing that page.
-- `server.ps1` mirrors the `/portfolio/*` rewrite so pretty URLs work in local preview instead of only after deploy.
+- `.tools/server.ps1` mirrors the `/portfolio/*` rewrite so pretty URLs work in local preview instead of only after deploy.
 
 ## SEO layer
 
 - **Canonicals point at `https://premiuminsulationny.com`** on all five indexable pages. The domain is connected to Netlify, so these resolve.
 - **`index.html` carries a `HomeAndConstructionBusiness` JSON-LD block** (name, phone, founders, locality, six `areaServed` counties, three-service `hasOfferCatalog`). Street address, geo coordinates, and opening hours are **deliberately omitted rather than guessed** — adding them is the single biggest remaining local-SEO win, but they must come from the client.
-- **Open Graph + Twitter Card tags on all six pages**, sharing one image: `assets/img/og-share.jpg` (1200x630, generated from the truck livery photo by `tools/make-icons.ps1`). OG image URLs must be absolute, hence the hardcoded domain.
+- **Open Graph + Twitter Card tags on all six pages**, sharing one image: `assets/img/og-share.jpg` (1200x630, generated from the truck livery photo by `.tools/make-icons.ps1`). OG image URLs must be absolute, hence the hardcoded domain.
 - **`robots.txt`** (disallows `/admin/`, points at the sitemap) and **`sitemap.xml`** (five pages; `portfolio-detail.html` excluded since it is one noindex template serving every job).
 - **Job pages are now indexable.** Each is served at its own `/portfolio/<slug>` URL, and `portfolio-detail.js` fills in the canonical, title, description and OG image from the matched job. When a slug matches nothing it injects `<meta name="robots" content="noindex">` instead, so a bad URL does not register as a soft 404. `robots.txt` disallows the bare `/portfolio-detail.html` template so it cannot be indexed in its own right.
 - Job URLs are **not** in `sitemap.xml` — they come from CMS-edited `jobs.json`, and generating them would need a build step. Google discovers them through the links on `portfolio.html`, which is sufficient.
@@ -85,7 +85,7 @@ requested through **Netlify's Image CDN**:
   `[300, 600]`, lightbox `1800`.
 - The detail hero passes `eager: true` — it is above the fold, and lazy-loading
   it would delay the largest contentful paint.
-- **`server.ps1` mirrors the endpoint** (returning the original file, unresized),
+- **`.tools/server.ps1` mirrors the endpoint** (returning the original file, unresized),
   so local preview exercises the same URLs instead of a separate fallback path.
   Only `file://` bypasses the CDN.
 - Encoding is handled by `encodeURIComponent`, which matters because client
@@ -116,7 +116,7 @@ reload ([#3093](https://github.com/decaporg/decap-cms/issues/3093)). Note that
 3.8.4) was ruled out: it affects only the preview pane, and this site runs
 3.15.1/3.17.1.
 
-**Do not "fix" this by re-running `tools/optimize-images.ps1` over
+**Do not "fix" this by re-running `.tools/optimize-images.ps1` over
 `assets/img/jobs/`.** Rewriting a committed image *adds* a new blob while the
 original stays in history forever, so it makes the repo **larger**, not smaller —
 and since Image CDN already resizes on delivery, there is no serving benefit
@@ -136,8 +136,8 @@ Gateway and is a genuine last resort.
 - All `<img>` tags carry intrinsic `width`/`height` (the one exception, `#lightboxImg`, is populated at runtime). This matters most for the two logos, which are styled `height: fixed; width: auto` and so cannot reserve horizontal space until load.
 - Below-the-fold images use `loading="lazy" decoding="async"`; header logos stay eager.
 - Favicons (`favicon-16/32.png`, `apple-touch-icon.png`) are a **"PI" monogram in the brand red/gold**, not the wordmark — the real logo is 480x288 and illegible below ~64px.
-- `tools/make-icons.ps1` regenerates the favicon set + OG image. Only re-run if the brand mark changes.
-- `tools/optimize-images.ps1` was reworked and now has two important properties:
+- `.tools/make-icons.ps1` regenerates the favicon set + OG image. Only re-run if the brand mark changes.
+- `.tools/optimize-images.ps1` was reworked and now has two important properties:
   - **Idempotent.** JPEG re-encoding is lossy, so the old version degraded every image a little on every run — and the docs told you to re-run it routinely. It now skips files already within their width/size budget, and reverts any re-encode that fails to gain ≥8% at unchanged dimensions ("at quality floor").
   - **Matches extensions explicitly.** The old `Get-ChildItem -Include *.jpg` also matched `.jpeg` on Windows, which silently emitted a duplicate `GreenFiber.jpg` alongside `GreenFiber.jpeg`.
   - Full-bleed hero/banner images are capped at 1600px wide / quality 72 (they always sit under a dark overlay); half-column images 1200px / quality 78.
@@ -145,9 +145,9 @@ Gateway and is a genuine last resort.
 ## Repo & deploy
 
 - GitHub: `https://github.com/realtyspan/premium_insulation.git`, branch `main`.
-- `publish = "."` serves the **whole repo**. Netlify skips dotfiles and `netlify.toml` itself; `CLAUDE.md`, `server.ps1` and `tools/` are blocked by forced 404 rules in `netlify.toml`. Any new non-site file added at the root needs a rule there too.
+- `publish = "."` serves the **whole repo**. Netlify never serves dot-folders, so internal files live in them: these notes in `.claude/CLAUDE.md`, the preview server and image scripts in `.tools/`. Put any new non-site file there too. (Forced 404 rules were tried first and failed: they match case-sensitively but Netlify serves files case-insensitively, so `/Claude.md` got through.)
 - Netlify site is connected to that repo; Identity + Git Gateway have been enabled and at least one test invite has been walked through.
-- Images are optimized via `tools/optimize-images.ps1` (uses .NET `System.Drawing` — no ImageMagick/PIL available on this dev machine). Re-run it after adding new large source photos to `assets/img/`.
+- Images are optimized via `.tools/optimize-images.ps1` (uses .NET `System.Drawing` — no ImageMagick/PIL available on this dev machine). Re-run it after adding new large source photos to `assets/img/`.
 
 ## Known open items
 
@@ -159,7 +159,7 @@ Checked 2026-11-21 against the live site and the Netlify dashboard:
 - [x] Netlify Image CDN works on the deployed site (returns resized WebP).
 - [x] `sitemap.xml` submitted to Google Search Console — **owner reports done, not verified** (needs a Google sign-in).
 - [ ] Placeholder photos: Daycare has real before/after uploads; Foundation Wall Air-Seal has a real "before" but a stock `wall-cavity-fill-1.jpg` "after"; Commercial Hangar Insulation still uses the seed `hangar-dome-1/2.jpg` pair. Client replaces via `/admin/`.
-- [ ] After the next deploy, confirm `/CLAUDE.md`, `/Claude.md`, `/server.ps1` and `/tools/make-icons.ps1` return 404 on premiuminsulationny.com (the rules can't be tested locally).
+- [ ] After the next deploy, confirm `/CLAUDE.md`, `/Claude.md`, `/server.ps1`, `/Server.ps1` and `/tools/make-icons.ps1` return 404 on premiuminsulationny.com.
 - [ ] **Get the street address, ZIP, and business hours from the client** and add them to the JSON-LD block in `index.html` — still missing on the live site; the largest remaining local-SEO gain.
 - [ ] Netlify's docs mention image-transformation "credits" on Pro plans but do not publish free-plan limits. Transformations are edge-cached, so repeat views should not re-bill, but glance at account usage once real traffic starts.
 - [ ] Netlify Identity/Git Gateway deprecation — no action needed now, but keep DecapBridge in mind if it ever stops working.

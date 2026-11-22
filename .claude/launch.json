@@ -4,7 +4,7 @@
     {
       "name": "premium-insulation-static",
       "runtimeExecutable": "powershell",
-      "runtimeArgs": ["-ExecutionPolicy", "Bypass", "-File", "server.ps1"],
+      "runtimeArgs": ["-ExecutionPolicy", "Bypass", "-File", ".tools/server.ps1"],
       "port": 8080
     }
   ]

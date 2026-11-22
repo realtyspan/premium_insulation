@@ -1,6 +1,6 @@
 param([int]$Port = 8080)
 
-$root = $PSScriptRoot
+$root = Split-Path $PSScriptRoot -Parent   # repo root (this script lives in .tools)
 $listener = New-Object System.Net.HttpListener
 $listener.Prefixes.Add("http://localhost:$Port/")
 $listener.Start()

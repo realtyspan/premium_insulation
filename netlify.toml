@@ -11,28 +11,11 @@
   to = "/portfolio-detail.html"
   status = 200
 
-# Keep working files out of the public site. There is no build step, so
-# `publish = "."` serves the whole repo; Netlify already skips dotfiles and
-# netlify.toml, but CLAUDE.md (internal notes), server.ps1 (local preview) and
-# tools/ (image scripts) would otherwise be readable by anyone. force = true is
-# needed because the files exist. Add new non-site files here.
-[[redirects]]
-  from = "/CLAUDE.md"
-  to = "/404.html"
-  status = 404
-  force = true
-
-[[redirects]]
-  from = "/server.ps1"
-  to = "/404.html"
-  status = 404
-  force = true
-
-[[redirects]]
-  from = "/tools/*"
-  to = "/404.html"
-  status = 404
-  force = true
+# Internal files: `publish = "."` serves the whole repo, so notes and scripts
+# live in dot-folders (.claude/, .tools/), which Netlify never serves. Don't
+# hide files with 404 redirect rules instead: rules match case-sensitively but
+# Netlify serves files case-insensitively, so /Claude.md slipped past a
+# /CLAUDE.md rule.
 
 # ---------------------------------------------------------------------------
 # Caching
@@ -43,7 +26,7 @@
 # Netlify's default (ETag revalidation — cheap 304s, always correct).
 #
 # Images are the bulk of the payload, are named stably, and change only when
-# tools/optimize-images.ps1 is re-run or the client uploads a new job photo
+# .tools/optimize-images.ps1 is re-run or the client uploads a new job photo
 # (which lands under a new filename), so they take a real cache window.
 # ---------------------------------------------------------------------------
 
