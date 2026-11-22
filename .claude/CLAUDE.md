@@ -159,7 +159,7 @@ Checked 2026-11-21 against the live site and the Netlify dashboard:
 - [x] Netlify Image CDN works on the deployed site (returns resized WebP).
 - [x] `sitemap.xml` submitted to Google Search Console — **owner reports done, not verified** (needs a Google sign-in).
 - [ ] Placeholder photos: Daycare has real before/after uploads; Foundation Wall Air-Seal has a real "before" but a stock `wall-cavity-fill-1.jpg` "after"; Commercial Hangar Insulation still uses the seed `hangar-dome-1/2.jpg` pair. Client replaces via `/admin/`.
-- [ ] After the next deploy, confirm `/CLAUDE.md`, `/Claude.md`, `/server.ps1`, `/Server.ps1` and `/tools/make-icons.ps1` return 404 on premiuminsulationny.com.
+- [x] Internal files hidden: `/CLAUDE.md`, `/Claude.md`, `/Server.ps1`, `/.tools/...` and the old `/tools/` paths all return 404 on the live site (checked 2026-11-21).
 - [ ] **Get the street address, ZIP, and business hours from the client** and add them to the JSON-LD block in `index.html` — still missing on the live site; the largest remaining local-SEO gain.
 - [ ] Netlify's docs mention image-transformation "credits" on Pro plans but do not publish free-plan limits. Transformations are edge-cached, so repeat views should not re-bill, but glance at account usage once real traffic starts.
 - [ ] Netlify Identity/Git Gateway deprecation — no action needed now, but keep DecapBridge in mind if it ever stops working.
