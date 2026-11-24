@@ -2,9 +2,8 @@
 # Login: DecapBridge (replaces Netlify Identity + Git Gateway). Clients sign
 # in with email + password, Google or Microsoft; no GitHub account needed.
 #
-# PLACEHOLDER until the DecapBridge site is created: paste the backend block
-# DecapBridge generates (Dashboard > site > config.yml) over the one below.
-# It is not secret. Keep `branch: cloudflare-test` while testing, so test
+# DecapBridge site "Premium Insulation" (created 2026-11-23). The block below
+# comes from DecapBridge (Dashboard > site > config.yml); it is not secret. Keep `branch: cloudflare-test` while testing, so test
 # edits never touch the live Netlify site; change it to `main` at launch.
 # ---------------------------------------------------------------------------
 backend:
@@ -13,8 +12,8 @@ backend:
   branch: cloudflare-test
   auth_type: pkce
   base_url: https://auth.decapbridge.com
-  auth_endpoint: /sites/REPLACE-WITH-DECAPBRIDGE-SITE-ID/pkce
-  auth_token_endpoint: /sites/REPLACE-WITH-DECAPBRIDGE-SITE-ID/token
+  auth_endpoint: /sites/d3576d04-34f5-4eb1-aab1-659cced52410/pkce
+  auth_token_endpoint: /sites/d3576d04-34f5-4eb1-aab1-659cced52410/token
   gateway_url: https://gateway.decapbridge.com
   # Each save is recorded with the editor's name, so the history shows who changed what.
   commit_messages:
