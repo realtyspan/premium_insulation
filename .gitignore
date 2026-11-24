@@ -10,3 +10,4 @@ public/content/jobs.json
 # committed here is served publicly by Netlify, so these stay out of the repo.
 public/assets/*.pdf
 public/assets/*.docx
+__pycache__/

@@ -49,7 +49,7 @@ collections:
   - name: "jobs"
     label: "Jobs"
     label_singular: "Job"
-    description: "Your before & after jobs. Click a job to change it, or New Job to add one. Newest jobs show first on the website."
+    description: "Your before & after jobs. Click a job to change it, or the + Job button to add one. Newest jobs show first on the website."
     folder: "public/content/jobs"
     extension: "json"
     format: "json"
@@ -58,7 +58,11 @@ collections:
     slug: "{{slug}}"
     identifier_field: "title"
     summary: "{{title}} — {{county}}"
+    # "Sort by" menu. (A default sort order is not supported by this Decap
+    # version: the object form fails config validation.)
     sortable_fields: ["date", "title", "county"]
+    # The AFTER photo appears on each job's card in the grid view.
+    thumbnail: "afterImage"
     # The side-by-side preview showed raw text and confused editors; the form
     # gets the whole screen instead.
     editor:
