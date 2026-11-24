@@ -1,0 +1,32 @@
+# Response headers for files in public/ (Cloudflare reads this file; it is
+# never served itself). These do NOT apply to responses made by
+# src/worker.js (the form and /portfolio/<slug> job pages); the worker adds
+# the same security headers itself.
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: SAMEORIGIN
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
+  Strict-Transport-Security: max-age=31536000
+
+# PRE-LAUNCH: keeps search engines out while the site is only on its
+# preview address. DELETE THIS BLOCK when premiuminsulationny.com moves here.
+/*
+  X-Robots-Tag: noindex
+
+/admin/*
+  X-Robots-Tag: noindex
+  Cache-Control: no-cache
+
+# Client-edited jobs: short cache so a save shows up within a minute.
+/content/*
+  Cache-Control: public, max-age=60
+
+# Images are named stably and change only when re-optimised or when the client
+# uploads a new job photo (which gets a new filename).
+/assets/img/*
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+
+/assets/*
+  Cache-Control: public, max-age=86400

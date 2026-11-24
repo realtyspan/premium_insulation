@@ -15,34 +15,50 @@ window.PIPortfolio = (function () {
   }
 
   /* ------------------------------------------------------------------
-     Netlify Image CDN
+     Cloudflare image resizing
 
      Job photos are uploaded through the CMS straight from a phone, at full
      resolution. Rather than ask a non-technical client to resize anything,
-     Netlify's image endpoint resizes and re-encodes them at the edge, and
-     negotiates WebP/AVIF from the browser's Accept header on its own. It
-     needs no build step and no configuration for local site assets.
+     Cloudflare resizes and re-encodes them at the edge:
+       /cdn-cgi/image/width=800,quality=78,format=auto/assets/img/jobs/x.jpg
+     format=auto picks WebP/AVIF for browsers that support them.
 
-     .tools/server.ps1 mirrors the endpoint (serving the original file, unresized) so
-     local preview exercises these same URLs rather than a separate code path.
+     This only works on a domain whose DNS is on Cloudflare with image
+     Transformations switched on (Cloudflare dashboard > the domain > Images >
+     Transformations > Enable). The *.workers.dev preview address and local
+     preview cannot resize, so they get the photo as uploaded. Add a host to
+     RESIZE_HOSTS only after Transformations is on for it, or every portfolio
+     photo there breaks.
      ------------------------------------------------------------------ */
-  var CDN_ENDPOINT = '/.netlify/images';
+  var RESIZE_HOSTS = ['premiuminsulationny.com', 'www.premiuminsulationny.com'];
 
   function cdnAvailable() {
-    // Opening the files directly from disk has no server to answer the
-    // endpoint; everything else (local preview or Netlify) does.
-    return window.location.protocol !== 'file:';
+    return RESIZE_HOSTS.indexOf(window.location.hostname) !== -1;
   }
 
   function transformable(src) {
-    // Remote sources would need an [images] remote_images allowlist in
-    // netlify.toml, so pass them through untouched rather than 404.
-    return !!src && !/^https?:\/\//i.test(src) && !/^data:/i.test(src) && cdnAvailable();
+    // Only this site's own files; remote or inline images pass through untouched.
+    return isLocalPath(src) && cdnAvailable();
+  }
+
+  function isLocalPath(src) {
+    return !!src && src.charAt(0) === '/' && src.charAt(1) !== '/';
   }
 
   function imageUrl(src, width) {
-    if (!transformable(src)) return src;
-    return CDN_ENDPOINT + '?url=' + encodeURIComponent(src) + '&w=' + width + '&q=78';
+    if (!isLocalPath(src)) return src;
+    // Encode each part of the path: client filenames routinely contain
+    // spaces, parentheses, & and #, which would otherwise break the address
+    // (a # cuts it short even without resizing).
+    var path = src.split('/').map(function (part) {
+      return encodeURIComponent(decodeURIComponentSafe(part));
+    }).join('/');
+    if (!transformable(src)) return path;
+    return '/cdn-cgi/image/width=' + width + ',quality=78,format=auto' + path;
+  }
+
+  function decodeURIComponentSafe(s) {
+    try { return decodeURIComponent(s); } catch (e) { return s; }
   }
 
   function imageSrcset(src, widths) {

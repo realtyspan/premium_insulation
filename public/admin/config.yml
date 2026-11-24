@@ -1,16 +1,44 @@
+# ---------------------------------------------------------------------------
+# Login: DecapBridge (replaces Netlify Identity + Git Gateway). Clients sign
+# in with email + password, Google or Microsoft; no GitHub account needed.
+#
+# PLACEHOLDER until the DecapBridge site is created: paste the backend block
+# DecapBridge generates (Dashboard > site > config.yml) over the one below.
+# It is not secret. Keep `branch: cloudflare-test` while testing, so test
+# edits never touch the live Netlify site; change it to `main` at launch.
+# ---------------------------------------------------------------------------
 backend:
   name: git-gateway
-  branch: main
+  repo: realtyspan/premium_insulation
+  branch: cloudflare-test
+  auth_type: pkce
+  base_url: https://auth.decapbridge.com
+  auth_endpoint: /sites/REPLACE-WITH-DECAPBRIDGE-SITE-ID/pkce
+  auth_token_endpoint: /sites/REPLACE-WITH-DECAPBRIDGE-SITE-ID/token
+  gateway_url: https://gateway.decapbridge.com
+  # Each save is recorded with the editor's name, so the history shows who changed what.
+  commit_messages:
+    create: "Create {{collection}} “{{slug}}” - {{author-name}} <{{author-login}}> via DecapBridge"
+    update: "Update {{collection}} “{{slug}}” - {{author-name}} <{{author-login}}> via DecapBridge"
+    delete: "Delete {{collection}} “{{slug}}” - {{author-name}} <{{author-login}}> via DecapBridge"
+    uploadMedia: "Upload “{{path}}” - {{author-name}} <{{author-login}}> via DecapBridge"
+    deleteMedia: "Delete “{{path}}” - {{author-name}} <{{author-login}}> via DecapBridge"
+    openAuthoring: "Message {{message}} - {{author-name}} <{{author-login}}> via DecapBridge"
 
-# Netlify Identity + Git Gateway must be enabled in the Netlify dashboard
-# (Site settings > Identity > Enable, and Identity > Services > Git Gateway)
-# before this admin panel can log anyone in.
+# Lets DecapBridge's Google / Microsoft / password logins show the editor's name.
+auth:
+  email_claim: email
+  first_name_claim: first_name
+  last_name_claim: last_name
+  avatar_url_claim: avatar_url
 
-media_folder: "assets/img/jobs"
+# Paths are inside the repo; only public/ is published.
+media_folder: "public/assets/img/jobs"
 public_folder: "/assets/img/jobs"
 
-site_url: https://premiuminsulationny.com
-display_url: https://premiuminsulationny.com
+# The preview address until launch, then https://premiuminsulationny.com
+site_url: https://premium-insulation.dataderivation.workers.dev
+display_url: https://premium-insulation.dataderivation.workers.dev
 logo_url: /assets/img/PremiumInsulation-Logo.png
 
 collections:
@@ -21,7 +49,7 @@ collections:
       - name: "jobs"
         label: "Before & After Jobs"
         description: "Add, edit, reorder, or remove the before/after jobs shown on the Portfolio page."
-        file: "content/jobs.json"
+        file: "public/content/jobs.json"
         format: "json"
         fields:
           - label: "Jobs"
@@ -53,9 +81,9 @@ collections:
               #
               # Guidance only: Decap cannot enforce a maximum on the default
               # git-backed media library, and every upload is committed to the
-              # repository permanently. Visitors always get a resized copy via
-              # Netlify Image CDN, so this is about the editor and repo growth,
-              # not page speed.
+              # repository permanently. On the real domain visitors get a
+              # resized copy via Cloudflare image resizing (js/portfolio-common.js);
+              # the workers.dev preview serves photos as uploaded.
               - { label: "Before Photo", name: "beforeImage", widget: "image", hint: "Keep photos under about 1 MB. Larger ones still upload and still display correctly on the site, but their thumbnail may not preview here in the editor." }
               - { label: "After Photo", name: "afterImage", widget: "image", hint: "Take this from the same spot as the Before photo where you can, so the drag-to-compare slider lines up. Same 1 MB guidance as above." }
               - label: "Gallery Photos"

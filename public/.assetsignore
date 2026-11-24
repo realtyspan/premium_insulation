@@ -1,0 +1,5 @@
+# Files in public/ that Cloudflare should never upload (same format as .gitignore).
+.DS_Store
+Thumbs.db
+desktop.ini
+*.tmp

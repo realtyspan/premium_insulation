@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Contact &amp; Service Area | Premium Insulation, Inc. | Red Hook, NY</title>
 <meta name="description" content="Request a free insulation estimate from Premium Insulation, Inc. Serving Dutchess, Columbia, Ulster, Greene, Rensselaer &amp; Albany Counties, NY. Call 845-758-1147.">
-<link rel="canonical" href="https://premiuminsulationny.com/contact.html">
+<link rel="canonical" href="https://premiuminsulationny.com/contact">
 
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16.png">
@@ -15,7 +15,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Premium Insulation, Inc.">
 <meta property="og:locale" content="en_US">
-<meta property="og:url" content="https://premiuminsulationny.com/contact.html">
+<meta property="og:url" content="https://premiuminsulationny.com/contact">
 <meta property="og:title" content="Contact &amp; Service Area | Premium Insulation, Inc. | Red Hook, NY">
 <meta property="og:description" content="Request a free, no-pressure insulation estimate. Serving six Hudson Valley counties from Red Hook, NY. Call 845-758-1147.">
 <meta property="og:image" content="https://premiuminsulationny.com/assets/img/og-share.jpg">
@@ -44,16 +44,16 @@
 
 <header class="site-header">
   <div class="container nav">
-    <a href="index.html" class="logo">
+    <a href="/" class="logo">
       <img src="assets/img/PremiumInsulation-Logo.png" alt="Premium Insulation, Inc." class="logo__img" width="480" height="288">
     </a>
     <nav>
       <ul class="nav__links">
-        <li><a href="index.html">Home</a></li>
-        <li><a href="about.html">About</a></li>
-        <li><a href="services.html">Services</a></li>
-        <li><a href="portfolio.html">Portfolio</a></li>
-        <li><a href="contact.html" class="active">Contact</a></li>
+        <li><a href="/">Home</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/services">Services</a></li>
+        <li><a href="/portfolio">Portfolio</a></li>
+        <li><a href="/contact" class="active">Contact</a></li>
       </ul>
     </nav>
     <div class="nav__right">
@@ -61,7 +61,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
         <span class="txt">845-758-1147</span>
       </a>
-      <a href="contact.html" class="btn btn--primary btn--sm">Free Estimate</a>
+      <a href="/contact" class="btn btn--primary btn--sm">Free Estimate</a>
       <button class="nav__toggle" aria-label="Open menu"><span></span><span></span><span></span></button>
     </div>
   </div>
@@ -69,11 +69,11 @@
 
 <div class="mobile-drawer">
   <button class="mobile-drawer__close" aria-label="Close menu">&times;</button>
-  <a href="index.html">Home</a>
-  <a href="about.html">About</a>
-  <a href="services.html">Services</a>
-  <a href="portfolio.html">Portfolio</a>
-  <a href="contact.html">Contact</a>
+  <a href="/">Home</a>
+  <a href="/about">About</a>
+  <a href="/services">Services</a>
+  <a href="/portfolio">Portfolio</a>
+  <a href="/contact">Contact</a>
   <a href="tel:8457581147" style="color:#f0a500;">845-758-1147</a>
 </div>
 
@@ -173,10 +173,11 @@
       </div>
 
       <div class="form-card">
-        <form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field">
-          <input type="hidden" name="form-name" value="contact">
-          <p class="hp-field">
-            <label>Leave this field blank: <input name="bot-field"></label>
+        <!-- Sent to /api/contact (src/worker.js), which emails it to the
+             client. js/contact-form.js shows the thank-you message inline. -->
+        <form id="contact-form" name="contact" method="POST" action="/api/contact">
+          <p class="hp-field" aria-hidden="true">
+            <label>Leave this field blank: <input name="website" tabindex="-1" autocomplete="off"></label>
           </p>
 
           <div class="field-row">
@@ -226,6 +227,10 @@
             <textarea id="notes" name="notes" rows="4" placeholder="Tell us about your project..."></textarea>
           </div>
 
+          <!-- Turnstile: Cloudflare's "are you human" check. The site key is
+               public; local preview swaps in Cloudflare's test key. -->
+          <div id="turnstile" class="turnstile" data-sitekey="REPLACE-WITH-TURNSTILE-SITE-KEY"></div>
+
           <p class="form-error" id="form-error" role="alert" hidden></p>
 
           <button type="submit" class="btn btn--primary" id="form-submit" style="width:100%; justify-content:center;">Get My Free Estimate</button>
@@ -251,11 +256,11 @@
       <div>
         <h4>Navigate</h4>
         <ul>
-          <li><a href="index.html">Home</a></li>
-          <li><a href="about.html">About Us</a></li>
-          <li><a href="services.html">Services</a></li>
-          <li><a href="portfolio.html">Portfolio</a></li>
-          <li><a href="contact.html">Contact</a></li>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About Us</a></li>
+          <li><a href="/services">Services</a></li>
+          <li><a href="/portfolio">Portfolio</a></li>
+          <li><a href="/contact">Contact</a></li>
         </ul>
       </div>
       <div>
@@ -288,5 +293,6 @@
 
 <script src="js/main.js"></script>
 <script src="js/contact-form.js"></script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=onTurnstileLoad" async defer></script>
 </body>
 </html>

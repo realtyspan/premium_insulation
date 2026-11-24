@@ -12,7 +12,7 @@
 
 Add-Type -AssemblyName System.Drawing
 
-$imgDir = Join-Path (Split-Path $PSScriptRoot -Parent) "assets\img"
+$imgDir = Join-Path (Split-Path $PSScriptRoot -Parent) "public\assets\img"
 
 # Generated at exact dimensions by make-icons.ps1 — re-encoding these would
 # only degrade them, so they are never processed here.

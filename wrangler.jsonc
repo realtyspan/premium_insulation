@@ -1,0 +1,44 @@
+// Cloudflare settings for the Premium Insulation site (Workers with static
+// assets, Data Derivation starter 1.0.0). Cloudflare reads this on every
+// deploy. Only the public/ folder is published.
+{
+  // Must match the Worker's name in the Cloudflare dashboard.
+  "name": "premium-insulation",
+  "main": "src/worker.js",
+  "compatibility_date": "2026-10-01",
+
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    // /about.html redirects to /about; /admin/ serves admin/index.html.
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page",
+    // The contact form always goes to the worker, never to a file.
+    "run_worker_first": ["/api/*"]
+  },
+
+  // The free *.workers.dev address (the preview address before launch),
+  // plus a preview address for each test version.
+  "workers_dev": true,
+  "preview_urls": true,
+
+  // Settings typed into the dashboard survive deploys.
+  "keep_vars": true,
+
+  // Not secret. Secrets (TURNSTILE_SECRET, CONTACT_TO, RESEND_API_KEY) are set
+  // in the dashboard only, never here.
+  "vars": {
+    "SITE_NAME": "premiuminsulationny.com",
+    // TESTING ONLY: Resend's shared test sender. It can ONLY deliver to the
+    // address the Resend account was created with, and lands in junk.
+    // Before launch, switch to an address on premiuminsulationny.com
+    // (see .claude/CLAUDE.md, "Moving to Cloudflare").
+    "CONTACT_FROM": "Premium Insulation website <onboarding@resend.dev>"
+  },
+
+  // Cloudflare Email Sending (paid Workers plan, domain on Cloudflare).
+  // Uncomment to use it instead of Resend.
+  // "send_email": [{ "name": "EMAIL" }],
+
+  "observability": { "enabled": true }
+}

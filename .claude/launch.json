@@ -2,10 +2,10 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "premium-insulation-static",
-      "runtimeExecutable": "powershell",
-      "runtimeArgs": ["-ExecutionPolicy", "Bypass", "-File", ".tools/server.ps1"],
-      "port": 8080
+      "name": "premium-insulation-cloudflare",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [".tools/preview.py", "8081"],
+      "port": 8081
     }
   ]
 }

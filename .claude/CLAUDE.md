@@ -7,10 +7,30 @@ Marketing site + self-service job portfolio for Premium Insulation, Inc., a spra
 - **Always `git pull` before changing anything.** The client edits jobs through `/admin/` (Decap CMS), which commits straight to GitHub, so this copy goes stale without anyone touching it.
 - This folder (`D:\Sites\premiuminsulation`) is the working copy since 2026-11-21. The old copy at `...\Temp Processing - Documents\Premium Insulation\Website` (OneDrive-synced) is retired — don't work there.
 - Client files live in the client's Google Shared drive `G:\Shared drives\Premium Insulation\` (moved 2026-11-21): `2 Brand & Assets\Logo\Premium_Ins2.ai`, `2 Brand & Assets\Photos\` (job photos, Truck.jpg, `USB Files\` + `Resized\`), `3 Website\` (the website brief .docx/.pdf). Pull new source photos from there; never commit the brief (assets/*.pdf/.docx are gitignored because they'd be public).
-- **Hosting stays on Netlify** — Forms, Identity/Git Gateway (the client's `/admin/` login) and Image CDN all depend on it. This is the exception to the company "Cloudflare Pages" default; moving it would mean replacing all three, so don't propose it casually.
-- Domain premiuminsulationny.com — live on Netlify (`www` redirects to it) — registrar/expiry: see the Domain Inventory sheet (`D:\Sites\_company\CLAUDE.md`).
+- **Moving to Cloudflare (owner decision 2026-11-23).** The live site stays on Netlify, from `main`, until the owner approves the Cloudflare copy. The Cloudflare copy is built on the **`cloudflare-test` branch** — see "Moving to Cloudflare" below. Most of this file still describes the Netlify version on `main`.
+- Domain premiuminsulationny.com — live on Netlify, which also runs its DNS (`www` redirects to it; **no email** on the domain — no MX/SPF/DMARC, checked 2026-11-22). Registrar/expiry: see the Domain Inventory sheet (`D:\Sites\_company\CLAUDE.md`).
 - Pushing to `main` redeploys the live Netlify site — push only with the owner's OK.
-- Preview: `.claude/launch.json` config `premium-insulation-static` → http://localhost:8080 (`.tools/server.ps1`).
+- Preview: on `main`, `.claude/launch.json` config `premium-insulation-static` → http://localhost:8080 (`.tools/server.ps1`). On `cloudflare-test`, config `premium-insulation-cloudflare` → http://localhost:8081 (`.tools/preview.py`).
+
+## Moving to Cloudflare (`cloudflare-test` branch)
+
+Rebuilt on the Data Derivation starter 1.0.0 setup (`D:\Sites\_template`; read its `.claude/CLAUDE.md` and `SETUP-CHECKLIST.md`). Design, pages and jobs are unchanged; what changed:
+- **Layout:** the site lives in `public/`, the only published folder. `wrangler.jsonc` (Worker `premium-insulation` → `premium-insulation.dataderivation.workers.dev`) and `src/worker.js` sit outside it. `netlify.toml` stays at the root until launch, unused by Cloudflare.
+- **Addresses have no `.html`** (`/about`). All page links, canonicals, `og:url` and `sitemap.xml` were changed; `_redirects` 301s the old `.html` addresses so Google carries the ranking over. `public/404.html` is a branded not-found page (all paths root-relative, since it shows at any depth).
+- **Job pages:** `/portfolio/<slug>` is served by `src/worker.js` (fetches `/portfolio-detail` from the static files and adds security headers, plus `noindex` on `*.workers.dev`). `.tools/preview.py` mirrors it.
+- **Contact form:** `contact.html` posts to `/api/contact` (`src/worker.js`) with Turnstile + a honeypot named `website`. All original fields kept; the one "Phone or Email" box becomes the reply-to only when it is an email address. Secrets set by the owner in the dashboard: `TURNSTILE_SECRET`, `CONTACT_TO` (Jeff's address — never in the repo), `RESEND_API_KEY`. `CONTACT_FROM` is Resend's test sender for now (delivers only to the Resend account's own address, lands in junk).
+- **Editing page:** Decap `^3.9.0` with **DecapBridge** logins (replaces Netlify Identity). `public/admin/config.yml` has a placeholder backend (`REPLACE-WITH-DECAPBRIDGE-SITE-ID`) pointed at `branch: cloudflare-test`, so test edits never reach the live site. Paths now start with `public/`.
+- **Photo resizing:** `/cdn-cgi/image/width=…,quality=78,format=auto/…` (Cloudflare Images transformations) instead of Netlify Image CDN — **only on hosts in `RESIZE_HOSTS`** in `public/js/portfolio-common.js` (the real domain). `workers.dev` cannot resize, so the preview serves photos as uploaded. Paths are always URI-encoded per segment.
+- `.tools/server.ps1` removed on this branch; image scripts now point at `public\assets\img`.
+
+**Still to do before the preview works (needs the owner's sign-ins; follow the starter's SETUP-CHECKLIST Part B steps 3–7):**
+1. Push the branch; Cloudflare → Workers & Pages → import `realtyspan/premium_insulation` (the Cloudflare GitHub app must be given access to it — the starter's app is on the Data-Derivation org only) with **production branch `cloudflare-test`** for now.
+2. Turnstile widget for the workers.dev host → site key into `contact.html` (`REPLACE-WITH-TURNSTILE-SITE-KEY`), secret into the dashboard.
+3. `CONTACT_TO`, `RESEND_API_KEY` secrets.
+4. DecapBridge site (counts toward the free plan's 3) with a GitHub key for this repo → backend block into `config.yml`; invite the owner to test.
+5. `python -I .tools/check_live.py https://premium-insulation.dataderivation.workers.dev`, a test form message, a test edit.
+
+**At launch (only after the owner approves the preview):** merge `main` into `cloudflare-test` first so the client's latest job edits come across (renames to `public/` merge cleanly); move DNS from Netlify to Cloudflare; turn on Images → Transformations for the zone **before** the domain serves this code; add the custom domain + `www` to the Worker and the Turnstile widget; verify `premiuminsulationny.com` in Resend (or Cloudflare Email Sending) and switch `CONTACT_FROM`; `config.yml` → `branch: main` and the real `site_url`; delete the PRE-LAUNCH block in `public/_headers`; merge into `main` and switch the Worker's production branch to `main`; **stop Netlify auto-publishing** (its `publish = "."` would now serve the repo root) and keep its last deploy as a fallback for a week; re-invite the client's editors through DecapBridge (their Netlify login stops working). Decide whether to move the repo to the Data-Derivation GitHub org.
 
 ## Stack, and why
 

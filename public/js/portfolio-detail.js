@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function () {
     })
     .catch(showNotFound);
 
-  /* Pretty URLs are /portfolio/<slug> (a Netlify 200 rewrite). The older
+  /* Pretty URLs are /portfolio/<slug> (served by src/worker.js on Cloudflare). The older
      ?job=<slug> form is still honoured so links shared before the change,
      and any bookmark of one, keep resolving. */
   function readSlug() {

@@ -1,0 +1,12 @@
+# Address changes (Cloudflare reads this file; it is never served itself).
+# Format:  old-address  new-address  status
+#   301 = moved for good
+# Page addresses no longer end in .html. Cloudflare would redirect these by
+# itself, but only temporarily; these tell Google the move is permanent, so
+# the old Netlify-era addresses pass their ranking on.
+
+/index.html             /             301
+/about.html             /about        301
+/services.html          /services     301
+/portfolio.html         /portfolio    301
+/contact.html           /contact      301

@@ -954,6 +954,9 @@ h2 { font-weight: 600; }
   overflow: hidden;
 }
 
+/* Turnstile spam check; reserves its height so the button doesn't jump. */
+.turnstile { min-height: 65px; margin: 0 0 18px; }
+
 .form-error {
   margin: 0 0 18px;
   padding: 14px 16px;

@@ -6,6 +6,6 @@ Disallow: /admin/
 
 # Jobs are served at /portfolio/<slug> via a 200 rewrite; the bare template
 # (and the legacy ?job= form) should not be indexed in its own right.
-Disallow: /portfolio-detail.html
+Disallow: /portfolio-detail
 
 Sitemap: https://premiuminsulationny.com/sitemap.xml

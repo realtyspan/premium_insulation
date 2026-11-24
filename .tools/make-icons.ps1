@@ -5,7 +5,7 @@
 Add-Type -AssemblyName System.Drawing
 
 $root      = Split-Path $PSScriptRoot -Parent
-$assetsDir = Join-Path $root "assets\img"
+$assetsDir = Join-Path $root "public\assets\img"
 
 $red  = [System.Drawing.ColorTranslator]::FromHtml("#c8102e")
 $gold = [System.Drawing.ColorTranslator]::FromHtml("#f0a500")
