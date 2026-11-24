@@ -13,8 +13,10 @@
     // /about.html redirects to /about; /admin/ serves admin/index.html.
     "html_handling": "auto-trailing-slash",
     "not_found_handling": "404-page",
-    // The contact form always goes to the worker, never to a file.
-    "run_worker_first": ["/api/*"]
+    // These always go to the worker first: the contact form, and job pages
+    // (/portfolio/<slug>, which are not files). Without this, the 404 page
+    // above answers job addresses before the worker ever sees them.
+    "run_worker_first": ["/api/*", "/portfolio/*"]
   },
 
   // The free *.workers.dev address (the preview address before launch),
