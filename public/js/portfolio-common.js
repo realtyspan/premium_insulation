@@ -14,6 +14,13 @@ window.PIPortfolio = (function () {
       .replace(/^-+|-+$/g, '');
   }
 
+  /* A job's web address (/portfolio/<slug>). .tools/build_jobs.py sets
+     job.slug from the job's file name, which the editor never changes, so
+     renaming a job keeps its address. The title fallback covers old data. */
+  function jobSlug(job) {
+    return job.slug || slugify(job.title);
+  }
+
   /* ------------------------------------------------------------------
      Cloudflare image resizing
 
@@ -180,6 +187,7 @@ window.PIPortfolio = (function () {
   return {
     el: el,
     slugify: slugify,
+    jobSlug: jobSlug,
     createBASlider: createBASlider,
     fetchJobs: fetchJobs,
     imageUrl: imageUrl,

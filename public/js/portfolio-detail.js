@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   P.fetchJobs()
     .then(function (jobs) {
-      var job = jobs.find(function (j) { return P.slugify(j.title) === slug; });
+      var job = jobs.find(function (j) { return P.jobSlug(j) === slug; });
       if (!job) { showNotFound(); return; }
       renderJob(job);
     })
@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Point every job at its canonical pretty URL, whichever form was used to
     // reach it, so the ?job= and /portfolio/ variants consolidate.
-    var canonicalUrl = 'https://premiuminsulationny.com/portfolio/' + P.slugify(job.title);
+    var canonicalUrl = 'https://premiuminsulationny.com/portfolio/' + P.jobSlug(job);
     setMeta('link[rel="canonical"]', 'href', canonicalUrl);
     setMeta('meta[property="og:url"]', 'content', canonicalUrl);
     setMeta('meta[property="og:title"]', 'content', document.title);

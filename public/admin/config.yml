@@ -41,57 +41,73 @@ display_url: https://premium-insulation.dataderivation.workers.dev
 logo_url: /assets/img/PremiumInsulation-Logo.png
 
 collections:
-  - name: "portfolio"
-    label: "Job Portfolio"
+  # One file per job (public/content/jobs/<slug>.json). The client sees a plain
+  # list of jobs with a "New Job" button and edits one short form at a time.
+  # .tools/build_jobs.py combines the files into content/jobs.json on every
+  # publish. The file name is fixed when a job is first saved and becomes its
+  # web address, so renaming a job later does NOT change or break its link.
+  - name: "jobs"
+    label: "Jobs"
     label_singular: "Job"
-    files:
-      - name: "jobs"
-        label: "Before & After Jobs"
-        description: "Add, edit, reorder, or remove the before/after jobs shown on the Portfolio page."
-        file: "public/content/jobs.json"
-        format: "json"
-        fields:
-          - label: "Jobs"
-            name: "jobs"
-            widget: "list"
-            summary: "{{fields.title}} — {{fields.county}}"
-            collapsed: true
-            minimize_collapsed: true
-            label_singular: "Job"
-            fields:
-              # The page address for each job is built from its title, so a
-              # rename moves the page. Warned about here because there is no
-              # other place the client would find that out.
-              - { label: "Job Title", name: "title", widget: "string", hint: "e.g. Red Hook Colonial — Attic Retrofit. Renaming a job also changes its web address, so any link you have already shared for it will stop working." }
-              - label: "County"
-                name: "county"
-                widget: "select"
-                options: ["Dutchess", "Columbia", "Ulster", "Greene", "Rensselaer", "Albany"]
-              - label: "Service Type"
-                name: "serviceType"
-                widget: "select"
-                options: ["Spray Foam", "Cellulose", "Soundproofing"]
-              # 1 MB is not an arbitrary round number: Git Gateway proxies
-              # GitHub's Contents API, which only returns file content inline
-              # up to 1 MB (1,048,576 bytes). Past that the content field comes
-              # back empty unless the raw media type is requested — which is a
-              # strong candidate for thumbnails rendering blank in this editor
-              # even though the upload itself commits fine.
-              #
-              # Guidance only: Decap cannot enforce a maximum on the default
-              # git-backed media library, and every upload is committed to the
-              # repository permanently. On the real domain visitors get a
-              # resized copy via Cloudflare image resizing (js/portfolio-common.js);
-              # the workers.dev preview serves photos as uploaded.
-              - { label: "Before Photo", name: "beforeImage", widget: "image", hint: "Keep photos under about 1 MB. Larger ones still upload and still display correctly on the site, but their thumbnail may not preview here in the editor." }
-              - { label: "After Photo", name: "afterImage", widget: "image", hint: "Take this from the same spot as the Before photo where you can, so the drag-to-compare slider lines up. Same 1 MB guidance as above." }
-              - label: "Gallery Photos"
-                name: "gallery"
-                widget: "list"
-                field: { label: "Photo", name: "photo", widget: "image" }
-                min: 0
-                max: 6
-                required: false
-                hint: "Up to 6 extra photos showing the full scope of the job, shown on the job's detail page alongside the Before/After pair above. Keep each under about 1 MB."
-              - { label: "Caption", name: "caption", widget: "text", required: false, hint: "One sentence describing the job." }
-              - { label: "Date", name: "date", widget: "datetime", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false, default: "" }
+    description: "Your before & after jobs. Click a job to change it, or New Job to add one. Newest jobs show first on the website."
+    folder: "public/content/jobs"
+    extension: "json"
+    format: "json"
+    create: true
+    delete: true
+    slug: "{{slug}}"
+    identifier_field: "title"
+    summary: "{{title}} — {{county}}"
+    sortable_fields: ["date", "title", "county"]
+    # The side-by-side preview showed raw text and confused editors; the form
+    # gets the whole screen instead.
+    editor:
+      preview: false
+    fields:
+      - label: "Job name"
+        name: "title"
+        widget: "string"
+        hint: "A short name for the job, e.g. \"Red Hook Colonial Attic\". You can change it later."
+      - label: "County"
+        name: "county"
+        widget: "select"
+        options: ["Dutchess", "Columbia", "Ulster", "Greene", "Rensselaer", "Albany"]
+      - label: "Type of work"
+        name: "serviceType"
+        widget: "select"
+        options: ["Spray Foam", "Cellulose", "Soundproofing"]
+      # Photos are committed to git permanently and Decap cannot limit their
+      # size; on the real domain Cloudflare resizes them for visitors
+      # (js/portfolio-common.js). Above ~1 MB the editor's own thumbnail may
+      # show blank (GitHub Contents API inline limit) although the upload works.
+      - label: "BEFORE photo"
+        name: "beforeImage"
+        widget: "image"
+        choose_url: false
+        hint: "The space before you started. Photos straight from a phone are fine."
+      - label: "AFTER photo"
+        name: "afterImage"
+        widget: "image"
+        choose_url: false
+        hint: "The finished job. Taken from the same spot as the Before photo, the website lets visitors slide between the two."
+      - label: "Short description"
+        name: "caption"
+        widget: "text"
+        required: false
+        hint: "Optional. One sentence about the job, e.g. \"Attic sealed with closed-cell spray foam.\""
+      - label: "More photos"
+        name: "gallery"
+        widget: "list"
+        label_singular: "photo"
+        field: { label: "Photo", name: "photo", widget: "image", choose_url: false }
+        max: 6
+        required: false
+        hint: "Optional. Up to 6 more photos of the job, shown on the job's own page."
+      - label: "Date of the job"
+        name: "date"
+        widget: "datetime"
+        format: "YYYY-MM-DD"
+        date_format: "MM/DD/YYYY"
+        time_format: false
+        default: "{{now}}"
+        hint: "Today's date is filled in for you. Newer jobs show first."

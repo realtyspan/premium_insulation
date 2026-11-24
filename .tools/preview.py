@@ -8,6 +8,8 @@ local preview behaves like Cloudflare:
   * missing pages get public/404.html with a 404 status
   * POST /api/contact answers "ok" WITHOUT sending email (preview only)
   * /portfolio/<slug> serves portfolio-detail.html, like src/worker.js
+  * /content/jobs.json is built fresh from public/content/jobs/ on every
+    request (.tools/build_jobs.py; Cloudflare builds it once per deploy)
 Photos are never resized here (only the real domain on Cloudflare resizes).
 The _redirects file is not applied here; it works on Cloudflare.
 """
@@ -16,6 +18,9 @@ import re
 import json
 import pathlib
 import sys
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import build_jobs  # noqa: E402
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent / "public"
 PORT = int(sys.argv[1]) if len(sys.argv) > 1 else 8081
@@ -34,6 +39,14 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
     def do_GET(self):
         path, _, query = self.path.partition("?")
+        if path == "/content/jobs.json":
+            body = json.dumps(build_jobs.collect(), ensure_ascii=False).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
         # /portfolio/<slug>: one job's page (src/worker.js does this on Cloudflare).
         if re.fullmatch(r"/portfolio/[^/]+/?", path):
             self.path = "/portfolio-detail.html" + ("?" + query if query else "")

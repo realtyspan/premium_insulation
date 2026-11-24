@@ -3,6 +3,9 @@ Thumbs.db
 *.tmp
 node_modules/
 
+# Built from public/content/jobs/*.json on every deploy (.tools/build_jobs.py).
+public/content/jobs.json
+
 # Client source documents dropped into assets/ for reference. Anything
 # committed here is served publicly by Netlify, so these stay out of the repo.
 public/assets/*.pdf

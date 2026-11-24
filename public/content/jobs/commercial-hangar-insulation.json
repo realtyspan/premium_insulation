@@ -1,0 +1,13 @@
+{
+  "title": "Commercial Hangar Insulation",
+  "county": "Columbia",
+  "serviceType": "Soundproofing",
+  "beforeImage": "/assets/img/hangar-dome-1.jpg",
+  "afterImage": "/assets/img/hangar-dome-2.jpg",
+  "caption": "Full-span quonset hangar roof deck sprayed for thermal and sound control.",
+  "date": "2023-10-05",
+  "gallery": [
+    "/assets/img/hero1-hangar-biplane.jpg",
+    "/assets/img/fleet-trucks.jpg"
+  ]
+}

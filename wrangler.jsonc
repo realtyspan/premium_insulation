@@ -7,6 +7,11 @@
   "main": "src/worker.js",
   "compatibility_date": "2026-10-01",
 
+  // Runs before every deploy: combines the one-file-per-job folder
+  // (public/content/jobs/, what the editing page saves) into the single list
+  // the portfolio pages read (public/content/jobs.json, not kept in git).
+  "build": { "command": "python3 .tools/build_jobs.py" },
+
   "assets": {
     "directory": "./public",
     "binding": "ASSETS",
