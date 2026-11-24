@@ -61,8 +61,6 @@ collections:
     # "Sort by" menu. (A default sort order is not supported by this Decap
     # version: the object form fails config validation.)
     sortable_fields: ["date", "title", "county"]
-    # The AFTER photo appears on each job's card in the grid view.
-    thumbnail: "afterImage"
     # The side-by-side preview showed raw text and confused editors; the form
     # gets the whole screen instead.
     editor:
